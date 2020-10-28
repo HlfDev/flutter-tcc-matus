@@ -56,7 +56,7 @@ class UserManager extends ChangeNotifier {
 
         user = User(
           id: firebaseUser.uid,
-          nickName: firebaseUser.displayName,
+          name: firebaseUser.displayName,
           photoUrl: firebaseUser.photoURL,
           loginType: "Google",
         );

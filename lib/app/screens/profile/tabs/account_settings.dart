@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:matus_app/app/components/image_type_selector.dart';
+import 'package:matus_app/app/widgets/image_type_selector.dart';
 import 'package:matus_app/app/models/user_manager.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
 import 'package:provider/provider.dart';

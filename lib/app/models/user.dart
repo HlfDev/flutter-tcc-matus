@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class User {
-  User({this.id, this.nickName, this.photoUrl, this.loginType});
+  User({this.id, this.name, this.photoUrl, this.loginType});
 
   String id;
-  String nickName;
+  String name;
   String photoUrl;
   String loginType;
 
@@ -17,7 +17,7 @@ class User {
 
   Map<String, dynamic> toDocument() {
     return {
-      'nickName': nickName,
+      'name': name,
       'photoUrl': photoUrl,
       'loginType': loginType,
     };
@@ -25,7 +25,7 @@ class User {
 
   User.fromDocument(DocumentSnapshot document) {
     id = document.id;
-    nickName = document.get('nickName') as String;
+    name = document.get('name') as String;
     photoUrl = document.get('photoUrl') as String;
     loginType = document.get('loginType') as String;
   }

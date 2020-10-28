@@ -44,8 +44,9 @@ class LoginScreen extends StatelessWidget {
                           GoogleSignInButton(
                             darkMode: true,
                             text: 'Continuar com Google',
-                            onPressed: () {
-                              userManager.signInWithGoogle();
+                            onPressed: () async {
+                              await userManager.signInWithGoogle();
+                              Navigator.pop(context);
                             },
                           ),
                           SizedBox(
