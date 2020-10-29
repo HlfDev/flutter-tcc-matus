@@ -90,43 +90,11 @@ class AnnouncementScreen extends StatelessWidget {
                 )),
             const HorizontalIconTextWithArrow('Filtrar por Categoria',
                 Icons.my_location, MainAxisAlignment.start),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: SizedBox(
-                height: 100.0,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: const [
-                    CategoryItens(
-                        text: 'Papel\nPapelão',
-                        assetLocation:
-                            'assets/images/announcement_screen/category_paper.svg'),
-                    CategoryItens(
-                        text: 'Plástico',
-                        assetLocation:
-                            'assets/images/announcement_screen/category_plastic.svg'),
-                    CategoryItens(
-                        text: 'Vidro',
-                        assetLocation:
-                            'assets/images/announcement_screen/category_glass.svg'),
-                    CategoryItens(
-                        text: 'Metal',
-                        assetLocation:
-                            'assets/images/announcement_screen/category_metal.svg'),
-                    CategoryItens(
-                        text: 'Madeira',
-                        assetLocation:
-                            'assets/images/announcement_screen/category_wood.svg'),
-                    CategoryItens(
-                        text: 'Componente\nEletrônico',
-                        assetLocation:
-                            'assets/images/announcement_screen/category_components.svg'),
-                    CategoryItens(
-                        text: 'Óleo',
-                        assetLocation:
-                            'assets/images/announcement_screen/category_oil.svg'),
-                  ],
-                ),
+            SizedBox(
+              height: 80.0,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: const [CategoryList()],
               ),
             ),
             const HorizontalIconTextWithArrow(

@@ -36,8 +36,9 @@ class AnnouncementManager extends ChangeNotifier {
     }
 
     if (category.isNotEmpty) {
-      final categoryFilter = filteredAnnouncements.where(
-          (p) => p.category.toLowerCase().contains(category.toLowerCase()));
+      final List<Announcement> categoryFilter = [];
+      categoryFilter.addAll(filteredAnnouncements.where(
+          (p) => p.category.toLowerCase().contains(category.toLowerCase())));
 
       filteredAnnouncements.clear();
       filteredAnnouncements.addAll(categoryFilter);

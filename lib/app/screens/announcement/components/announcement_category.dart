@@ -4,58 +4,142 @@ import 'package:matus_app/app/models/announcement_manager.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
 import 'package:provider/provider.dart';
 
-class CategoryItens extends StatefulWidget {
-  const CategoryItens({
-    Key key,
-    @required String text,
-    @required String assetLocation,
-  })  : _text = text,
-        _assetLocation = assetLocation,
-        super(key: key);
-
-  final String _text;
-  final String _assetLocation;
+class CategoryList extends StatefulWidget {
+  const CategoryList();
 
   @override
   _CategoryItensState createState() => _CategoryItensState();
 }
 
-class _CategoryItensState extends State<CategoryItens> {
-  List<bool> isSelected = [false];
+class _CategoryItensState extends State<CategoryList> {
+  String findCategory(int index) {
+    switch (index) {
+      case 0:
+        return 'Papel';
+        break;
+      case 1:
+        return 'Plástico';
+        break;
+      case 2:
+        return 'Vidro';
+        break;
+      case 3:
+        return 'Metal';
+        break;
+      case 4:
+        return 'Madeira';
+        break;
+      case 5:
+        return 'Peças';
+        break;
+      case 6:
+        return 'Óleo';
+        break;
+      default:
+        return '';
+    }
+  }
 
+  List<bool> isSelected = [false, false, false, false, false, false, false];
   @override
   Widget build(BuildContext context) {
     return Consumer<AnnouncementManager>(builder: (_, announcementManager, __) {
-      return Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ToggleButtons(
-              fillColor: AppColor.secondaryColor,
-              onPressed: (int index) {
-                setState(() {
-                  isSelected[0] = !isSelected[0];
-                  isSelected[0]
-                      ? announcementManager.category = 'z'
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ToggleButtons(
+          fillColor: AppColor.secondaryColor,
+          onPressed: (int index) {
+            setState(() {
+              for (int buttonIndex = 0;
+                  buttonIndex < isSelected.length;
+                  buttonIndex++) {
+                if (buttonIndex == index) {
+                  isSelected[buttonIndex] = !isSelected[buttonIndex];
+                  isSelected[buttonIndex]
+                      ? announcementManager.category = findCategory(buttonIndex)
                       : announcementManager.category = '';
-                });
-              },
-              isSelected: isSelected,
-              children: <Widget>[
-                SvgPicture.asset(
-                  widget._assetLocation,
-                  width: 30.0,
-                  height: 30.0,
-                ),
-              ],
+                } else {
+                  isSelected[buttonIndex] = false;
+                }
+              }
+            });
+          },
+          isSelected: isSelected,
+          children: const <Widget>[
+            CategoryItem(
+              text: 'Papel',
+              assetLocation:
+                  'assets/images/announcement_screen/category_paper.svg',
             ),
-          ),
-          Text(
-            widget._text,
-            textAlign: TextAlign.center,
-          ),
-        ],
+            CategoryItem(
+                text: 'Plástico',
+                assetLocation:
+                    'assets/images/announcement_screen/category_plastic.svg'),
+            CategoryItem(
+                text: 'Vidro',
+                assetLocation:
+                    'assets/images/announcement_screen/category_glass.svg'),
+            CategoryItem(
+                text: 'Metal',
+                assetLocation:
+                    'assets/images/announcement_screen/category_metal.svg'),
+            CategoryItem(
+              text: 'Madeira',
+              assetLocation:
+                  'assets/images/announcement_screen/category_wood.svg',
+            ),
+            CategoryItem(
+                text: 'Peças',
+                assetLocation:
+                    'assets/images/announcement_screen/category_components.svg'),
+            CategoryItem(
+                text: 'Óleo',
+                assetLocation:
+                    'assets/images/announcement_screen/category_oil.svg'),
+          ],
+        ),
       );
     });
+  }
+}
+
+class CategoryItem extends StatelessWidget {
+  const CategoryItem({
+    Key key,
+    this.assetLocation,
+    this.text,
+  }) : super(key: key);
+
+  final String assetLocation;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 60,
+      height: 60,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: SvgPicture.asset(
+              assetLocation,
+              width: 20.0,
+              height: 20.0,
+            ),
+          ),
+          Align(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                text,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 12.0),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
