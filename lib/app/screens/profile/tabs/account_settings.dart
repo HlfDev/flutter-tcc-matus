@@ -1,17 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+
 import 'package:flutter/material.dart';
-import 'package:matus_app/app/widgets/image_type_selector.dart';
 import 'package:matus_app/app/models/user_manager.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
 import 'package:provider/provider.dart';
 
-class AccountSettings extends StatefulWidget {
+class AccountSettingsTab extends StatefulWidget {
   @override
-  _AccountSettingsState createState() => _AccountSettingsState();
+  _AccountSettingsTabState createState() => _AccountSettingsTabState();
 }
 
-class _AccountSettingsState extends State<AccountSettings> {
+class _AccountSettingsTabState extends State<AccountSettingsTab> {
   FirebaseFirestore db = FirebaseFirestore.instance;
 
   @override
@@ -31,35 +30,35 @@ class _AccountSettingsState extends State<AccountSettings> {
                         image: NetworkImage(userManager.user.photoUrl)))),
             FlatButton(
               onPressed: () {
-                showModalBottomSheet(
-                    context: context,
-                    builder: (context) => ImageTypeSelector(
-                          image: (file) async {
-                            if (file != null) {
-                              final StorageUploadTask task = FirebaseStorage
-                                  .instance
-                                  .ref()
-                                  .child(
-                                      'users/${userManager.user.id}${DateTime.now().millisecondsSinceEpoch}')
-                                  .putFile(file);
+                // showModalBottomSheet(
+                //     context: context,
+                //     builder: (context) => ImageTypeSelector(
+                //           image: (file) async {
+                //             if (file != null) {
+                //               final StorageUploadTask task = FirebaseStorage
+                //                   .instance
+                //                   .ref()
+                //                   .child(
+                //                       'users/${userManager.user.id}${DateTime.now().millisecondsSinceEpoch}')
+                //                   .putFile(file);
 
-                              final StorageTaskSnapshot taskSnapshot =
-                                  await task.onComplete;
-                              final String url = await taskSnapshot.ref
-                                  .getDownloadURL() as String;
+                //               final StorageTaskSnapshot taskSnapshot =
+                //                   await task.onComplete;
+                //               final String url = await taskSnapshot.ref
+                //                   .getDownloadURL() as String;
 
-                              if (url != null) {
-                                final result = await db
-                                    .collection("users")
-                                    .doc(userManager.user.id)
-                                    .get();
+                //               if (url != null) {
+                //                 final result = await db
+                //                     .collection("users")
+                //                     .doc(userManager.user.id)
+                //                     .get();
 
-                                result.reference.update({"photoUrl": url});
-                                userManager.loadCurrentUser();
-                              }
-                            }
-                          },
-                        ));
+                //                 result.reference.update({"photoUrl": url});
+                //                 userManager.loadCurrentUser();
+                //               }
+                //             }
+                //           },
+                //         ));
               },
               child: const Text(
                 'Alterar Foto',

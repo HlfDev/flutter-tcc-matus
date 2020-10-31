@@ -1,6 +1,8 @@
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:flutter/material.dart';
 import 'package:matus_app/app/models/announcement.dart';
+import 'package:matus_app/app/models/user_manager.dart';
+import 'package:provider/provider.dart';
 
 class AnnouncementOpenScreen extends StatelessWidget {
   const AnnouncementOpenScreen(this.announcement);
@@ -15,12 +17,47 @@ class AnnouncementOpenScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(announcement.name),
         centerTitle: true,
+        actions: <Widget>[
+          Consumer<UserManager>(
+            builder: (_, userManager, __) {
+              if (userManager.isLoggedIn == true) {
+                if (announcement.owner == userManager.user.id) {
+                  return IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () {
+                      Navigator.of(context).pushReplacementNamed(
+                          '/announcement_edit',
+                          arguments: announcement);
+                    },
+                  );
+                } else if (userManager.user.favoritedAnnouncements
+                    .contains(announcement.id)) {
+                  return IconButton(
+                    icon: const Icon(Icons.favorite),
+                    onPressed: () {
+                      userManager.removeFavoritedAnnouncement(announcement.id);
+                    },
+                  );
+                } else {
+                  return IconButton(
+                    icon: const Icon(Icons.favorite_border),
+                    onPressed: () {
+                      userManager.saveFavoritedAnnouncement(announcement.id);
+                    },
+                  );
+                }
+              } else {
+                return Container();
+              }
+            },
+          )
+        ],
       ),
       backgroundColor: Colors.white,
       body: ListView(
         children: <Widget>[
           AspectRatio(
-            aspectRatio: 1,
+            aspectRatio: 1.5,
             child: Carousel(
               images: announcement.images.map((url) {
                 return NetworkImage(url);
@@ -45,7 +82,7 @@ class AnnouncementOpenScreen extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: Text(
-                    'A partir de',
+                    'Valor',
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 13,

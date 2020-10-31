@@ -40,12 +40,19 @@ class AnnouncementListTile extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Preço: ${announcement.price}',
+                        'R\$ ${announcement.price.toStringAsFixed(2)}',
                         style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w800,
                             color: Theme.of(context).primaryColor),
                       ),
+                      Text(
+                          '29 de outubro, ${announcement.city} - ${announcement.state}',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.grey,
+                          )),
                     ],
                   ),
                 )

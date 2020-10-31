@@ -1,15 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
+import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'announcement.dart';
 
 class AnnouncementManager extends ChangeNotifier {
   AnnouncementManager() {
     _loadAnnouncement();
+    _loadOwnerAnnouncement();
   }
-
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   List<Announcement> allAnnouncements = [];
+  List<Announcement> favoritedAnnouncements = [];
+  List<Announcement> myAnnouncements = [];
+  final firebase.FirebaseAuth _fauth = firebase.FirebaseAuth.instance;
   String _search = '';
   String _category = '';
 
@@ -48,6 +51,12 @@ class AnnouncementManager extends ChangeNotifier {
     return filteredAnnouncements;
   }
 
+  void update(Announcement announcement) {
+    allAnnouncements.removeWhere((a) => a.id == announcement.id);
+    allAnnouncements.add(announcement);
+    notifyListeners();
+  }
+
   Future<void> _loadAnnouncement() async {
     final QuerySnapshot snapAnnouncements =
         await firestore.collection("announcements").get();
@@ -55,6 +64,21 @@ class AnnouncementManager extends ChangeNotifier {
     allAnnouncements = snapAnnouncements.docs
         .map((d) => Announcement.fromDocument(d))
         .toList();
+
+    notifyListeners();
+  }
+
+  Future<void> _loadOwnerAnnouncement() async {
+    if (_fauth.currentUser != null) {
+      final QuerySnapshot snapAnnouncements = await firestore
+          .collection("announcements")
+          .where('owner', isEqualTo: _fauth.currentUser.uid)
+          .get();
+
+      myAnnouncements = snapAnnouncements.docs
+          .map((d) => Announcement.fromDocument(d))
+          .toList();
+    }
 
     notifyListeners();
   }

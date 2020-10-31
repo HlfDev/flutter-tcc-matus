@@ -5,6 +5,7 @@ import 'package:matus_app/app/models/user_manager.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'app/models/announcement_manager.dart';
+import 'app/screens/announcement/announcement_edit_screen.dart';
 import 'app/screens/announcement/announcement_open_screen.dart';
 import 'app/screens/base/main_screen.dart';
 
@@ -39,6 +40,11 @@ class MyApp extends StatelessWidget {
           ),
           onGenerateRoute: (settings) {
             switch (settings.name) {
+              case '/announcement_edit':
+                return MaterialPageRoute(
+                    builder: (_) => AnnouncementEditScreen(
+                        settings.arguments as Announcement));
+
               case '/announcement_open':
                 return MaterialPageRoute(
                     builder: (_) => AnnouncementOpenScreen(

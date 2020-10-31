@@ -40,7 +40,17 @@ class _CategoryItensState extends State<CategoryList> {
     }
   }
 
-  List<bool> isSelected = [false, false, false, false, false, false, false];
+  List<bool> isSelected = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+  ];
   @override
   Widget build(BuildContext context) {
     return Consumer<AnnouncementManager>(builder: (_, announcementManager, __) {
@@ -72,6 +82,11 @@ class _CategoryItensState extends State<CategoryList> {
                   'assets/images/announcement_screen/category_paper.svg',
             ),
             CategoryItem(
+              text: 'Papelão',
+              assetLocation:
+                  'assets/images/announcement_screen/category_paper.svg',
+            ),
+            CategoryItem(
                 text: 'Plástico',
                 assetLocation:
                     'assets/images/announcement_screen/category_plastic.svg'),
@@ -87,6 +102,11 @@ class _CategoryItensState extends State<CategoryList> {
               text: 'Madeira',
               assetLocation:
                   'assets/images/announcement_screen/category_wood.svg',
+            ),
+            CategoryItem(
+              text: 'Bateria',
+              assetLocation:
+                  'assets/images/announcement_screen/category_battery.svg',
             ),
             CategoryItem(
                 text: 'Peças',

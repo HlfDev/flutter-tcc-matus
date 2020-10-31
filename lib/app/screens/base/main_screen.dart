@@ -34,25 +34,33 @@ class _MainScreenState extends State<MainScreen> {
   ];
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      resizeToAvoidBottomInset: false,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => LoginScreen()),
-          );
-        },
-        backgroundColor: AppColor.secondaryColor,
-        child: const Icon(
-          Icons.add,
-          color: AppColor.primaryColor,
+    return Consumer<UserManager>(builder: (_, userManager, __) {
+      return Scaffold(
+        extendBody: true,
+        resizeToAvoidBottomInset: false,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            if (userManager.isLoggedIn) {
+              Navigator.of(context).pushNamed(
+                '/announcement_edit',
+              );
+            } else {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => LoginScreen()),
+              );
+            }
+          },
+          backgroundColor: AppColor.secondaryColor,
+          child: const Icon(
+            Icons.add,
+            color: AppColor.primaryColor,
+          ),
         ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: _buildBottomTab(),
-      body: _tabSelected.elementAt(selectedPosition),
-    );
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: _buildBottomTab(),
+        body: _tabSelected.elementAt(selectedPosition),
+      );
+    });
   }
 
   BottomAppBar _buildBottomTab() {

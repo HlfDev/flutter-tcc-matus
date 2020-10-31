@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:matus_app/app/models/announcement_manager.dart';
 import 'package:matus_app/app/screens/announcement/components/announcement_category.dart';
 import 'package:matus_app/app/screens/announcement/components/announcement_list_tile.dart';
+import 'package:matus_app/app/themes/app_colors.dart';
 import 'package:matus_app/app/widgets/icons.dart';
 import 'package:matus_app/app/widgets/location_dialog.dart';
 import 'package:provider/provider.dart';
@@ -89,7 +91,7 @@ class AnnouncementScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 12.0, color: Colors.grey[400]),
                 )),
             const HorizontalIconTextWithArrow('Filtrar por Categoria',
-                Icons.my_location, MainAxisAlignment.start),
+                Icons.category, MainAxisAlignment.start),
             SizedBox(
               height: 80.0,
               child: ListView(
@@ -98,11 +100,33 @@ class AnnouncementScreen extends StatelessWidget {
               ),
             ),
             const HorizontalIconTextWithArrow(
-                'Anúncios', Icons.my_location, MainAxisAlignment.start),
+                'Anúncios', Icons.storefront, MainAxisAlignment.start),
             Consumer<AnnouncementManager>(
               builder: (_, announcementManager, __) {
                 final filteredAnnoucements =
                     announcementManager.filteredAnnouncements;
+                if (announcementManager.filteredAnnouncements.isEmpty) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: SvgPicture.asset(
+                          'assets/images/announcement_screen/announcement_not_found.svg',
+                          width: 300.0,
+                          height: 300.0,
+                        ),
+                      ),
+                      const Text(
+                        'Nenhum Anúncio foi encontrado :(',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            color: AppColor.primaryColor,
+                            fontSize: 18.0),
+                      ),
+                    ],
+                  );
+                }
                 return ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -113,6 +137,9 @@ class AnnouncementScreen extends StatelessWidget {
                   },
                 );
               },
+            ),
+            const SizedBox(
+              height: 80.0,
             ),
           ],
         ),

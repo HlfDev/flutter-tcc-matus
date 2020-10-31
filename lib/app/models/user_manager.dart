@@ -6,12 +6,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserManager extends ChangeNotifier {
   UserManager() {
-    loadCurrentUser();
+    _loadCurrentUser();
   }
 
   final firebase.FirebaseAuth _fauth = firebase.FirebaseAuth.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
+  DocumentReference get firestoreUserRef =>
+      FirebaseFirestore.instance.doc('users/${user.id}');
   bool get isLoggedIn => user != null;
   User user;
 
@@ -21,7 +23,7 @@ class UserManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadCurrentUser() async {
+  Future<void> _loadCurrentUser() async {
     final firebase.User currentUser = _fauth.currentUser;
     if (currentUser != null) {
       final DocumentSnapshot docUser =
@@ -29,6 +31,25 @@ class UserManager extends ChangeNotifier {
       user = User.fromDocument(docUser);
       notifyListeners();
     }
+  }
+
+  Future<void> saveFavoritedAnnouncement(String announcement) async {
+    final val = [];
+    val.add(announcement);
+    user.favoritedAnnouncements.add(announcement);
+    await firestoreUserRef
+        .update({"favoritedAnnouncements": FieldValue.arrayUnion(val)});
+    notifyListeners();
+  }
+
+  Future<void> removeFavoritedAnnouncement(String announcement) async {
+    final val = [];
+    val.add(announcement);
+    user.favoritedAnnouncements.remove(announcement);
+    await firestoreUserRef
+        .update({"favoritedAnnouncements": FieldValue.arrayRemove(val)});
+
+    notifyListeners();
   }
 
   Future<void> signInWithGoogle({Function onFail, Function onSuccess}) async {
@@ -59,6 +80,7 @@ class UserManager extends ChangeNotifier {
           name: firebaseUser.displayName,
           photoUrl: firebaseUser.photoURL,
           loginType: "Google",
+          date: Timestamp.now(),
         );
 
         await user.saveData();

@@ -40,6 +40,10 @@ dependencies:
   provider: ^4.3.2+2
   flutter_auth_buttons: ^0.10.0
   carousel_pro: ^1.0.0
+  uuid: ^2.2.2
+  brasil_fields: ^0.4.0
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -66,8 +70,10 @@ flutter:
   - assets/images/announcement_screen/category_glass.svg
   - assets/images/announcement_screen/category_metal.svg
   - assets/images/announcement_screen/category_wood.svg
+  - assets/images/announcement_screen/category_battery.svg
   - assets/images/announcement_screen/category_components.svg
   - assets/images/announcement_screen/category_oil.svg
+  - assets/images/announcement_screen/announcement_not_found.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
