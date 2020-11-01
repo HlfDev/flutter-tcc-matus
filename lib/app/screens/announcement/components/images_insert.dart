@@ -19,6 +19,8 @@ class ImagesForm extends StatefulWidget {
 class _ImagesFormState extends State<ImagesForm> {
   @override
   Widget build(BuildContext context) {
+    int imagesLength = widget.announcement.images.length;
+
     return FormField<List<dynamic>>(
       initialValue: List.from(widget.announcement.images),
       validator: (images) {
@@ -34,8 +36,9 @@ class _ImagesFormState extends State<ImagesForm> {
         void onImageSelected(File file) {
           state.value.add(file);
           state.didChange(state.value);
-
           Navigator.of(context).pop();
+
+          imagesLength = state.value.length;
         }
 
         return Column(
@@ -67,6 +70,7 @@ class _ImagesFormState extends State<ImagesForm> {
                             onPressed: () {
                               state.value.remove(image);
                               state.didChange(state.value);
+                              imagesLength = state.value.length;
                             },
                           ),
                         ),
@@ -99,6 +103,14 @@ class _ImagesFormState extends State<ImagesForm> {
                             }
                           },
                         ),
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text('Incluir Fotos'),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text('$imagesLength de 5 Adicionadas'),
+                        ),
                       ],
                     ),
                   )),
@@ -120,7 +132,7 @@ class _ImagesFormState extends State<ImagesForm> {
                     fontSize: 12,
                   ),
                 ),
-              )
+              ),
           ],
         );
       },

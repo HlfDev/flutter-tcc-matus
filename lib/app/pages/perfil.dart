@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:matus_app/app/screens/profile/tabs/account_settings.dart';
 import 'package:matus_app/app/screens/profile/tabs/my_announcements.dart';
+import 'package:matus_app/app/screens/profile/tabs/saved_announcements.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
 
 class PerfilPage extends StatefulWidget {
@@ -65,7 +66,7 @@ class _TabBarDemoState extends State<TabBarDemo> {
           body: TabBarView(
             children: [
               MyAnnouncementsTab(),
-              Container(),
+              SavedAnnouncementsTab(),
               AccountSettingsTab(),
             ],
           ),

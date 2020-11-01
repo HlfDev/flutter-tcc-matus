@@ -12,6 +12,7 @@ class UserManager extends ChangeNotifier {
   final firebase.FirebaseAuth _fauth = firebase.FirebaseAuth.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
+
   DocumentReference get firestoreUserRef =>
       FirebaseFirestore.instance.doc('users/${user.id}');
   bool get isLoggedIn => user != null;
@@ -33,21 +34,21 @@ class UserManager extends ChangeNotifier {
     }
   }
 
-  Future<void> saveFavoritedAnnouncement(String announcement) async {
+  Future<void> addSavedAnnouncement(String announcement) async {
     final val = [];
     val.add(announcement);
-    user.favoritedAnnouncements.add(announcement);
+    user.savedAnnouncements.add(announcement);
     await firestoreUserRef
-        .update({"favoritedAnnouncements": FieldValue.arrayUnion(val)});
+        .update({"savedAnnouncements": FieldValue.arrayUnion(val)});
     notifyListeners();
   }
 
-  Future<void> removeFavoritedAnnouncement(String announcement) async {
+  Future<void> removeSavedAnnouncement(String announcement) async {
     final val = [];
     val.add(announcement);
-    user.favoritedAnnouncements.remove(announcement);
+    user.savedAnnouncements.remove(announcement);
     await firestoreUserRef
-        .update({"favoritedAnnouncements": FieldValue.arrayRemove(val)});
+        .update({"savedAnnouncements": FieldValue.arrayRemove(val)});
 
     notifyListeners();
   }

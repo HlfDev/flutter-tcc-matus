@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
+
 import 'announcement.dart';
 
 class AnnouncementManager extends ChangeNotifier {
@@ -10,9 +11,9 @@ class AnnouncementManager extends ChangeNotifier {
   }
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   List<Announcement> allAnnouncements = [];
-  List<Announcement> favoritedAnnouncements = [];
   List<Announcement> myAnnouncements = [];
   final firebase.FirebaseAuth _fauth = firebase.FirebaseAuth.instance;
+
   String _search = '';
   String _category = '';
 
@@ -60,7 +61,6 @@ class AnnouncementManager extends ChangeNotifier {
   Future<void> _loadAnnouncement() async {
     final QuerySnapshot snapAnnouncements =
         await firestore.collection("announcements").get();
-
     allAnnouncements = snapAnnouncements.docs
         .map((d) => Announcement.fromDocument(d))
         .toList();

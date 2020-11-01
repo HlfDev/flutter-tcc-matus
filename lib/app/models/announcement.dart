@@ -34,10 +34,10 @@ class Announcement extends ChangeNotifier {
       this.price,
       this.unity,
       this.amount,
-      this.owner,
       this.date,
       this.excluded,
-      this.images}) {
+      this.images,
+      this.owner}) {
     images = images ?? [];
   }
 
@@ -53,9 +53,9 @@ class Announcement extends ChangeNotifier {
     price = document['price'] as num;
     unity = document['unity'] as String;
     amount = document['amount'] as int;
-    owner = document['owner'] as String;
     date = document['date'] as Timestamp;
     excluded = document['excluded'] as bool;
+    owner = document['owner'] as String;
   }
 
   Future<void> save() async {
@@ -127,9 +127,9 @@ class Announcement extends ChangeNotifier {
       price: price,
       unity: unity,
       amount: amount,
-      owner: owner,
       date: date,
       excluded: excluded,
+      owner: owner,
     );
   }
 
@@ -144,8 +144,8 @@ class Announcement extends ChangeNotifier {
   num price;
   String unity;
   int amount;
-  String owner;
   Timestamp date = Timestamp.now();
   bool excluded = false;
   List<dynamic> newImages;
+  String owner;
 }

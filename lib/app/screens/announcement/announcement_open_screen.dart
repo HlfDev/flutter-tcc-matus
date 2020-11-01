@@ -30,19 +30,19 @@ class AnnouncementOpenScreen extends StatelessWidget {
                           arguments: announcement);
                     },
                   );
-                } else if (userManager.user.favoritedAnnouncements
+                } else if (userManager.user.savedAnnouncements
                     .contains(announcement.id)) {
                   return IconButton(
                     icon: const Icon(Icons.favorite),
                     onPressed: () {
-                      userManager.removeFavoritedAnnouncement(announcement.id);
+                      userManager.removeSavedAnnouncement(announcement.id);
                     },
                   );
                 } else {
                   return IconButton(
                     icon: const Icon(Icons.favorite_border),
                     onPressed: () {
-                      userManager.saveFavoritedAnnouncement(announcement.id);
+                      userManager.addSavedAnnouncement(announcement.id);
                     },
                   );
                 }

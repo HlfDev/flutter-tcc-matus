@@ -13,50 +13,54 @@ class AnnouncementListTile extends StatelessWidget {
           Navigator.of(context)
               .pushNamed('/announcement_open', arguments: announcement);
         },
-        child: Card(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-          child: Container(
-            height: 100,
-            padding: const EdgeInsets.all(8),
-            child: Row(
-              children: <Widget>[
-                AspectRatio(
-                  aspectRatio: 1,
-                  child: Image.network(announcement.images.first),
-                ),
-                const SizedBox(
-                  width: 16,
-                ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        announcement.name,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      Text(
-                        'R\$ ${announcement.price.toStringAsFixed(2)}',
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w800,
-                            color: Theme.of(context).primaryColor),
-                      ),
-                      Text(
-                          '29 de outubro, ${announcement.city} - ${announcement.state}',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.grey,
-                          )),
-                    ],
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Card(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+            child: Container(
+              height: 100,
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                children: <Widget>[
+                  AspectRatio(
+                    aspectRatio: 1,
+                    child: Image.network(announcement.images.first),
                   ),
-                )
-              ],
+                  const SizedBox(
+                    width: 16,
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          announcement.name,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        Text(
+                          'R\$ ${announcement.price.toStringAsFixed(2)}',
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                              color: Theme.of(context).primaryColor),
+                        ),
+                        Text(
+                            '29 de outubro, ${announcement.city} - ${announcement.state}',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.grey,
+                            )),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ));

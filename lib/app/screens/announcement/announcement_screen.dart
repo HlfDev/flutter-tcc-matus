@@ -73,7 +73,8 @@ class AnnouncementScreen extends StatelessWidget {
           )
         ],
       ),
-      body: SingleChildScrollView(
+      body: RefreshIndicator(
+        onRefresh: () async {},
         child: Column(
           children: [
             const HorizontalIconTextWithArrow(
@@ -101,6 +102,9 @@ class AnnouncementScreen extends StatelessWidget {
             ),
             const HorizontalIconTextWithArrow(
                 'Anúncios', Icons.storefront, MainAxisAlignment.start),
+            const SizedBox(
+              height: 8.0,
+            ),
             Consumer<AnnouncementManager>(
               builder: (_, announcementManager, __) {
                 final filteredAnnoucements =
@@ -127,19 +131,21 @@ class AnnouncementScreen extends StatelessWidget {
                     ],
                   );
                 }
-                return ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(4),
-                  itemCount: filteredAnnoucements.length,
-                  itemBuilder: (_, index) {
-                    return AnnouncementListTile(filteredAnnoucements[index]);
-                  },
+                return Expanded(
+                  child: ListView.builder(
+                    //shrinkWrap: true,
+                    //physics: const NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(4),
+                    itemCount: filteredAnnoucements.length,
+                    itemBuilder: (_, index) {
+                      return AnnouncementListTile(filteredAnnoucements[index]);
+                    },
+                  ),
                 );
               },
             ),
             const SizedBox(
-              height: 80.0,
+              height: 40.0,
             ),
           ],
         ),

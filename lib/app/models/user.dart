@@ -8,7 +8,7 @@ class User {
   String photoUrl;
   String loginType;
   Timestamp date = Timestamp.now();
-  List<String> favoritedAnnouncements;
+  List<String> savedAnnouncements;
 
   DocumentReference get firestoreUserRef =>
       FirebaseFirestore.instance.doc('users/$id');
@@ -23,6 +23,7 @@ class User {
       'photoUrl': photoUrl,
       'loginType': loginType,
       'date': date,
+      'savedAnnouncements': savedAnnouncements,
     };
   }
 
@@ -32,7 +33,7 @@ class User {
     photoUrl = document.get('photoUrl') as String;
     loginType = document.get('loginType') as String;
     date = document['date'] as Timestamp;
-    favoritedAnnouncements = List<String>.from(
-        document.data()['favoritedAnnouncements'] as List<dynamic>);
+    savedAnnouncements = List<String>.from(
+        document.data()['savedAnnouncements'] as List<dynamic> ?? []);
   }
 }

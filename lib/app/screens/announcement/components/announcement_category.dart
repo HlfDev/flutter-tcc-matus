@@ -48,7 +48,6 @@ class _CategoryItensState extends State<CategoryList> {
     false,
     false,
     false,
-    false,
     false
   ];
   @override
@@ -78,11 +77,6 @@ class _CategoryItensState extends State<CategoryList> {
           children: const <Widget>[
             CategoryItem(
               text: 'Papel',
-              assetLocation:
-                  'assets/images/announcement_screen/category_paper.svg',
-            ),
-            CategoryItem(
-              text: 'Papelão',
               assetLocation:
                   'assets/images/announcement_screen/category_paper.svg',
             ),
