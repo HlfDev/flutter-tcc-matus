@@ -1,0 +1,1 @@
+//TODO Explicar que no Dart não precisa de getter e setter;

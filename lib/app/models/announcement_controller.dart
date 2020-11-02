@@ -1,18 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase;
 
 import 'announcement.dart';
 
-class AnnouncementManager extends ChangeNotifier {
-  AnnouncementManager() {
+class AnnouncementController extends ChangeNotifier {
+  AnnouncementController() {
     _loadAnnouncement();
-    _loadOwnerAnnouncement();
   }
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   List<Announcement> allAnnouncements = [];
-  List<Announcement> myAnnouncements = [];
-  final firebase.FirebaseAuth _fauth = firebase.FirebaseAuth.instance;
 
   String _search = '';
   String _category = '';
@@ -36,17 +32,14 @@ class AnnouncementManager extends ChangeNotifier {
       filteredAnnouncements.addAll(allAnnouncements);
     } else {
       filteredAnnouncements.addAll(allAnnouncements
-          .where((p) => p.name.toLowerCase().contains(search.toLowerCase())));
+          .where((p) => p.title.toLowerCase().contains(search.toLowerCase())));
     }
 
     if (category.isNotEmpty) {
-      final List<Announcement> categoryFilter = [];
-      categoryFilter.addAll(filteredAnnouncements.where(
-          (p) => p.category.toLowerCase().contains(category.toLowerCase())));
-
-      filteredAnnouncements.clear();
-      filteredAnnouncements.addAll(categoryFilter);
-      return filteredAnnouncements;
+      return filteredAnnouncements
+          .where(
+              (l) => l.category.toLowerCase().contains(category.toLowerCase()))
+          .toList();
     }
 
     return filteredAnnouncements;
@@ -68,18 +61,22 @@ class AnnouncementManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _loadOwnerAnnouncement() async {
-    if (_fauth.currentUser != null) {
-      final QuerySnapshot snapAnnouncements = await firestore
-          .collection("announcements")
-          .where('owner', isEqualTo: _fauth.currentUser.uid)
-          .get();
-
-      myAnnouncements = snapAnnouncements.docs
-          .map((d) => Announcement.fromDocument(d))
-          .toList();
+  List<Announcement> findAnnouncementsCurrentUser(String id) {
+    try {
+      return allAnnouncements.where((l) => l.user == id).toList();
+    } catch (e) {
+      return null;
     }
+  }
 
-    notifyListeners();
+  List<Announcement> findSavedAnnouncementsCurrentUser(
+      List<String> savedAnnouncements) {
+    try {
+      return allAnnouncements
+          .where((l) => savedAnnouncements.contains(l.id))
+          .toList();
+    } catch (e) {
+      return null;
+    }
   }
 }

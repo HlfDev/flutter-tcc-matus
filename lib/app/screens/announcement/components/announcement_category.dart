@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:matus_app/app/models/announcement_manager.dart';
+import 'package:matus_app/app/models/announcement_controller.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
 import 'package:provider/provider.dart';
 
@@ -52,7 +52,8 @@ class _CategoryItensState extends State<CategoryList> {
   ];
   @override
   Widget build(BuildContext context) {
-    return Consumer<AnnouncementManager>(builder: (_, announcementManager, __) {
+    return Consumer<AnnouncementController>(
+        builder: (_, announcementManager, __) {
       return Padding(
         padding: const EdgeInsets.all(8.0),
         child: ToggleButtons(

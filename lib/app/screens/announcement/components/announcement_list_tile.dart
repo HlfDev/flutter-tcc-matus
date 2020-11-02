@@ -25,7 +25,7 @@ class AnnouncementListTile extends StatelessWidget {
                 children: <Widget>[
                   AspectRatio(
                     aspectRatio: 1,
-                    child: Image.network(announcement.images.first),
+                    child: Image.network(announcement.photos.first),
                   ),
                   const SizedBox(
                     width: 16,
@@ -36,7 +36,7 @@ class AnnouncementListTile extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          announcement.name,
+                          announcement.title,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
@@ -50,7 +50,7 @@ class AnnouncementListTile extends StatelessWidget {
                               color: Theme.of(context).primaryColor),
                         ),
                         Text(
-                            '29 de outubro, ${announcement.city} - ${announcement.state}',
+                            '29 de outubro, ${announcement.announcementAddress.city} - ${announcement.announcementAddress.state}',
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w800,

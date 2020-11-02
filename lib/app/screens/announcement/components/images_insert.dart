@@ -19,10 +19,10 @@ class ImagesForm extends StatefulWidget {
 class _ImagesFormState extends State<ImagesForm> {
   @override
   Widget build(BuildContext context) {
-    int imagesLength = widget.announcement.images.length;
+    int imagesLength = widget.announcement.photos.length;
 
     return FormField<List<dynamic>>(
-      initialValue: List.from(widget.announcement.images),
+      initialValue: List.from(widget.announcement.photos),
       validator: (images) {
         if (images.isEmpty) {
           return 'Insira ao menos uma imagem';
@@ -30,7 +30,7 @@ class _ImagesFormState extends State<ImagesForm> {
         return null;
       },
       onSaved: (images) {
-        widget.announcement.newImages = images;
+        widget.announcement.newPhotos = images;
       },
       builder: (state) {
         void onImageSelected(File file) {

@@ -14,10 +14,10 @@ class User {
       FirebaseFirestore.instance.doc('users/$id');
 
   Future<void> saveData() async {
-    await firestoreUserRef.set(toDocument());
+    await firestoreUserRef.set(toMap());
   }
 
-  Map<String, dynamic> toDocument() {
+  Map<String, dynamic> toMap() {
     return {
       'name': name,
       'photoUrl': photoUrl,

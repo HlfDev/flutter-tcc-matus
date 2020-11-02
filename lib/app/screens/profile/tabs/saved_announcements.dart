@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:matus_app/app/models/announcement_manager.dart';
-
+import 'package:matus_app/app/models/announcement_controller.dart';
+import 'package:matus_app/app/models/user_controller.dart';
 import 'package:matus_app/app/screens/announcement/components/announcement_list_tile.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
 import 'package:provider/provider.dart';
@@ -9,10 +9,12 @@ import 'package:provider/provider.dart';
 class SavedAnnouncementsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<AnnouncementManager>(
-      builder: (_, userManager, __) {
-        final userAnnouncements = userManager.myAnnouncements;
-        if (userAnnouncements.isEmpty) {
+    return Consumer2<AnnouncementController, UserController>(
+      builder: (_, announcementController, userController, __) {
+        final myAnnouncements =
+            announcementController.findSavedAnnouncementsCurrentUser(
+                userController.user.savedAnnouncements);
+        if (myAnnouncements.isEmpty) {
           return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -33,16 +35,17 @@ class SavedAnnouncementsTab extends StatelessWidget {
               ),
             ],
           );
+        } else {
+          return ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(4),
+            itemCount: myAnnouncements.length,
+            itemBuilder: (_, index) {
+              return AnnouncementListTile(myAnnouncements[index]);
+            },
+          );
         }
-        return ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(4),
-          itemCount: userAnnouncements.length,
-          itemBuilder: (_, index) {
-            return AnnouncementListTile(userAnnouncements[index]);
-          },
-        );
       },
     );
   }

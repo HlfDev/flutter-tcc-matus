@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:matus_app/app/models/announcement_manager.dart';
+import 'package:matus_app/app/models/announcement_controller.dart';
 import 'package:matus_app/app/screens/announcement/components/announcement_category.dart';
 import 'package:matus_app/app/screens/announcement/components/announcement_list_tile.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
@@ -16,7 +16,7 @@ class AnnouncementScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Consumer<AnnouncementManager>(
+        title: Consumer<AnnouncementController>(
           builder: (_, announcementManager, __) {
             if (announcementManager.search.isEmpty) {
               return const Text('Anúncios');
@@ -46,7 +46,7 @@ class AnnouncementScreen extends StatelessWidget {
           },
         ),
         actions: <Widget>[
-          Consumer<AnnouncementManager>(
+          Consumer<AnnouncementController>(
             builder: (_, announcementManager, __) {
               if (announcementManager.search.isEmpty) {
                 return IconButton(
@@ -105,7 +105,7 @@ class AnnouncementScreen extends StatelessWidget {
             const SizedBox(
               height: 8.0,
             ),
-            Consumer<AnnouncementManager>(
+            Consumer<AnnouncementController>(
               builder: (_, announcementManager, __) {
                 final filteredAnnoucements =
                     announcementManager.filteredAnnouncements;

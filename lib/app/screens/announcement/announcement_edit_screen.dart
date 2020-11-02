@@ -2,7 +2,7 @@ import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:matus_app/app/models/announcement.dart';
-import 'package:matus_app/app/models/announcement_manager.dart';
+import 'package:matus_app/app/models/announcement_controller.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
 import 'package:provider/provider.dart';
 
@@ -39,13 +39,13 @@ class AnnouncementEditScreen extends StatelessWidget {
                     children: <Widget>[
                       TextFormField(
                         keyboardType: TextInputType.text,
-                        initialValue: announcement.name,
+                        initialValue: announcement.title,
                         validator: (name) {
                           if (name.isEmpty) return 'Preencha o Titulo';
                           if (name.length < 6) return 'Título muito curto';
                           return null;
                         },
-                        onSaved: (name) => announcement.name = name,
+                        onSaved: (name) => announcement.title = name,
                         cursorColor: AppColor.primaryColor,
                         maxLength: 40,
                         decoration: const InputDecoration(
@@ -163,7 +163,8 @@ class AnnouncementEditScreen extends StatelessWidget {
                           ),
                           Expanded(
                             child: DropdownButtonFormField(
-                              hint: Text(announcement.unity ?? 'Unidade'),
+                              hint: Text(
+                                  announcement.unity ?? 'Unidade de Medida'),
                               items: ['KG', 'UN', 'LT'].map(
                                 (val) {
                                   return DropdownMenuItem<String>(
@@ -218,13 +219,15 @@ class AnnouncementEditScreen extends StatelessWidget {
                           FilteringTextInputFormatter.digitsOnly,
                           CepInputFormatter(),
                         ],
-                        initialValue: announcement.cep,
+                        initialValue:
+                            announcement.announcementAddress.cep ?? '',
                         validator: (cep) {
                           if (cep.isEmpty) return 'Preencha o CEP';
                           if (cep.length < 10) return 'CEP invalido';
                           return null;
                         },
-                        onSaved: (cep) => announcement.cep = cep,
+                        onSaved: (cep) =>
+                            announcement.announcementAddress.cep = cep,
                         cursorColor: AppColor.primaryColor,
                         decoration: const InputDecoration(
                           icon: Icon(Icons.location_history),
@@ -252,7 +255,7 @@ class AnnouncementEditScreen extends StatelessWidget {
                                       await announcement.save();
 
                                       context
-                                          .read<AnnouncementManager>()
+                                          .read<AnnouncementController>()
                                           .update(announcement);
                                       Navigator.of(context).pop();
                                     }

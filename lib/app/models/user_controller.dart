@@ -4,9 +4,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:matus_app/app/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class UserManager extends ChangeNotifier {
-  UserManager() {
-    _loadCurrentUser();
+class UserController extends ChangeNotifier {
+  UserController() {
+    loadCurrentUser();
   }
 
   final firebase.FirebaseAuth _fauth = firebase.FirebaseAuth.instance;
@@ -24,7 +24,7 @@ class UserManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _loadCurrentUser() async {
+  Future<void> loadCurrentUser() async {
     final firebase.User currentUser = _fauth.currentUser;
     if (currentUser != null) {
       final DocumentSnapshot docUser =

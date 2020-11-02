@@ -1,7 +1,7 @@
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:flutter/material.dart';
 import 'package:matus_app/app/models/announcement.dart';
-import 'package:matus_app/app/models/user_manager.dart';
+import 'package:matus_app/app/models/user_controller.dart';
 import 'package:provider/provider.dart';
 
 class AnnouncementOpenScreen extends StatelessWidget {
@@ -15,13 +15,13 @@ class AnnouncementOpenScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(announcement.name),
+        title: Text(announcement.title),
         centerTitle: true,
         actions: <Widget>[
-          Consumer<UserManager>(
+          Consumer<UserController>(
             builder: (_, userManager, __) {
               if (userManager.isLoggedIn == true) {
-                if (announcement.owner == userManager.user.id) {
+                if (announcement.user == userManager.user.id) {
                   return IconButton(
                     icon: const Icon(Icons.edit),
                     onPressed: () {
@@ -59,7 +59,7 @@ class AnnouncementOpenScreen extends StatelessWidget {
           AspectRatio(
             aspectRatio: 1.5,
             child: Carousel(
-              images: announcement.images.map((url) {
+              images: announcement.photos.map((url) {
                 return NetworkImage(url);
               }).toList(),
               dotSize: 4,
@@ -75,7 +75,7 @@ class AnnouncementOpenScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  announcement.name,
+                  announcement.title,
                   style: const TextStyle(
                       fontSize: 20, fontWeight: FontWeight.w600),
                 ),

@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
+import 'package:matus_app/app/models/announcement_address.dart';
 import 'package:uuid/uuid.dart';
 
 class Announcement extends ChangeNotifier {
@@ -23,58 +24,68 @@ class Announcement extends ChangeNotifier {
     notifyListeners();
   }
 
+  String id;
+  String title;
+  String description;
+  List<String> photos;
+  String category;
+  num price;
+  String unity;
+  int amount;
+  Timestamp announcementDate = Timestamp.now();
+  bool deleted = false;
+  List<dynamic> newPhotos;
+  String user;
+  AnnouncementAddress announcementAddress;
+
   Announcement(
       {this.id,
-      this.name,
+      this.title,
       this.description,
       this.category,
-      this.cep,
-      this.city,
-      this.state,
       this.price,
       this.unity,
       this.amount,
-      this.date,
-      this.excluded,
-      this.images,
-      this.owner}) {
-    images = images ?? [];
+      this.announcementDate,
+      this.deleted,
+      this.photos,
+      this.user,
+      this.announcementAddress}) {
+    photos = photos ?? [];
+    announcementAddress = AnnouncementAddress();
   }
 
   Announcement.fromDocument(DocumentSnapshot document) {
     id = document.id;
-    name = document['name'] as String;
+    title = document['title'] as String;
     description = document['description'] as String;
-    images = List<String>.from(document.data()['images'] as List<dynamic>);
+    photos = List<String>.from(document.data()['photos'] as List<dynamic>);
     category = document['category'] as String;
-    cep = document['cep'] as String;
-    city = document['city'] as String;
-    state = document['state'] as String;
     price = document['price'] as num;
     unity = document['unity'] as String;
     amount = document['amount'] as int;
-    date = document['date'] as Timestamp;
-    excluded = document['excluded'] as bool;
-    owner = document['owner'] as String;
+    announcementDate = document['announcementDate'] as Timestamp;
+    deleted = document['deleted'] as bool;
+    user = document['user'] as String;
+    announcementAddress = AnnouncementAddress.fromMap(
+        document['announcementAddress'] as Map<String, dynamic>);
   }
 
   Future<void> save() async {
     loading = true;
 
     final Map<String, dynamic> data = {
-      'name': name,
+      'title': title,
       'description': description,
-      'images': images,
+      'photos': photos,
       'category': category,
-      'cep': cep,
-      'city': 'Campinas',
-      'state': 'São Paulo',
       'price': price,
       'unity': unity,
       'amount': amount,
-      'date': date,
-      'owner': _fauth.currentUser.uid,
-      'excluded': excluded,
+      'announcementDate': announcementDate,
+      'user': _fauth.currentUser.uid,
+      'deleted': deleted,
+      'announcementAddress': announcementAddress.toMap(),
     };
 
     if (id == null) {
@@ -85,31 +96,31 @@ class Announcement extends ChangeNotifier {
     }
     final List<String> updateImages = [];
 
-    for (final newImage in newImages) {
-      if (images.contains(newImage)) {
-        updateImages.add(newImage as String);
+    for (final newPhoto in newPhotos) {
+      if (photos.contains(newPhoto)) {
+        updateImages.add(newPhoto as String);
       } else {
         final StorageUploadTask task =
-            storageRef.child(Uuid().v1()).putFile(newImage as File);
+            storageRef.child(Uuid().v1()).putFile(newPhoto as File);
         final StorageTaskSnapshot snapshot = await task.onComplete;
         final String url = await snapshot.ref.getDownloadURL() as String;
         updateImages.add(url);
       }
 
-      for (final image in images) {
-        if (!newImages.contains(image)) {
+      for (final photo in photos) {
+        if (!newPhotos.contains(photo)) {
           try {
-            final ref = await storage.getReferenceFromUrl(image);
+            final ref = await storage.getReferenceFromUrl(photo);
             await ref.delete();
           } catch (e) {
-            debugPrint('Falha ao deletar $image');
+            debugPrint('Falha ao deletar $photo');
           }
         }
       }
 
-      await firestoreRef.update({'images': updateImages});
+      await firestoreRef.update({'photos': updateImages});
 
-      images = updateImages;
+      photos = updateImages;
       loading = false;
     }
   }
@@ -117,35 +128,17 @@ class Announcement extends ChangeNotifier {
   Announcement clone() {
     return Announcement(
       id: id,
-      name: name,
+      title: title,
       description: description,
-      images: List.from(images),
+      photos: List.from(photos),
       category: category,
-      cep: cep,
-      city: city,
-      state: state,
       price: price,
       unity: unity,
       amount: amount,
-      date: date,
-      excluded: excluded,
-      owner: owner,
+      announcementDate: announcementDate,
+      deleted: deleted,
+      user: user,
+      announcementAddress: announcementAddress.clone(),
     );
   }
-
-  String id;
-  String name;
-  String description;
-  List<String> images;
-  String category;
-  String cep;
-  String city;
-  String state;
-  num price;
-  String unity;
-  int amount;
-  Timestamp date = Timestamp.now();
-  bool excluded = false;
-  List<dynamic> newImages;
-  String owner;
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:matus_app/app/models/user_manager.dart';
+import 'package:matus_app/app/models/user_controller.dart';
 import 'package:matus_app/app/screens/announcement/announcement_screen.dart';
 
 import 'package:matus_app/app/screens/login/login_screen.dart';
@@ -34,7 +34,7 @@ class _MainScreenState extends State<MainScreen> {
   ];
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserManager>(builder: (_, userManager, __) {
+    return Consumer<UserController>(builder: (_, userManager, __) {
       return Scaffold(
         extendBody: true,
         resizeToAvoidBottomInset: false,
@@ -68,7 +68,7 @@ class _MainScreenState extends State<MainScreen> {
       color: AppColor.primaryColor,
       shape: const CircularNotchedRectangle(),
       notchMargin: 5.0,
-      child: Consumer<UserManager>(builder: (_, userManager, __) {
+      child: Consumer<UserController>(builder: (_, userManager, __) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
