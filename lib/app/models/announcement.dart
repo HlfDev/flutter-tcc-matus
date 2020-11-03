@@ -47,7 +47,7 @@ class Announcement extends ChangeNotifier {
       this.unity,
       this.amount,
       this.announcementDate,
-      this.deleted,
+      this.deleted = false,
       this.photos,
       this.user,
       this.announcementAddress}) {
@@ -65,7 +65,7 @@ class Announcement extends ChangeNotifier {
     unity = document['unity'] as String;
     amount = document['amount'] as int;
     announcementDate = document['announcementDate'] as Timestamp;
-    deleted = document['deleted'] as bool;
+    deleted = (document['deleted'] ?? false) as bool;
     user = document['user'] as String;
     announcementAddress = AnnouncementAddress.fromMap(
         document['announcementAddress'] as Map<String, dynamic>);
@@ -123,6 +123,10 @@ class Announcement extends ChangeNotifier {
       photos = updateImages;
       loading = false;
     }
+  }
+
+  void delete() {
+    firestoreRef.update({'deleted': true});
   }
 
   Announcement clone() {

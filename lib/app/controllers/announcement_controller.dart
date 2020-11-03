@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import 'announcement.dart';
+import '../models/announcement.dart';
 
 class AnnouncementController extends ChangeNotifier {
   AnnouncementController() {
-    _loadAnnouncement();
+    loadAnnouncement();
   }
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   List<Announcement> allAnnouncements = [];
@@ -51,9 +51,17 @@ class AnnouncementController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> _loadAnnouncement() async {
-    final QuerySnapshot snapAnnouncements =
-        await firestore.collection("announcements").get();
+  void delete(Announcement announcement) {
+    announcement.delete();
+    allAnnouncements.removeWhere((a) => a.id == announcement.id);
+    notifyListeners();
+  }
+
+  Future<void> loadAnnouncement() async {
+    final QuerySnapshot snapAnnouncements = await firestore
+        .collection("announcements")
+        .where('deleted', isEqualTo: false)
+        .get();
     allAnnouncements = snapAnnouncements.docs
         .map((d) => Announcement.fromDocument(d))
         .toList();
@@ -61,9 +69,9 @@ class AnnouncementController extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<Announcement> findAnnouncementsCurrentUser(String id) {
+  List<Announcement> findAnnouncementsCurrentUser(String user) {
     try {
-      return allAnnouncements.where((l) => l.user == id).toList();
+      return allAnnouncements.where((l) => l.user == user).toList();
     } catch (e) {
       return null;
     }

@@ -1,13 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:matus_app/app/models/announcement.dart';
-import 'package:matus_app/app/models/user_controller.dart';
+import 'package:matus_app/app/controllers/user_controller.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
+import 'package:matus_app/routes.dart';
 import 'package:provider/provider.dart';
-import 'app/models/announcement_controller.dart';
-import 'app/screens/announcement/announcement_edit_screen.dart';
-import 'app/screens/announcement/announcement_open_screen.dart';
-import 'app/screens/base/main_screen.dart';
+import 'app/controllers/announcement_controller.dart';
 
 // ignore: avoid_void_async
 void main() async {
@@ -21,39 +18,24 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (_) => UserController(),
-          lazy: false,
-        ),
-        ChangeNotifierProvider(
-          create: (_) => AnnouncementController(),
-          lazy: false,
-        ),
-      ],
-      child: MaterialApp(
+        providers: [
+          ChangeNotifierProvider(
+            create: (_) => UserController(),
+            lazy: false,
+          ),
+          ChangeNotifierProvider(
+            create: (_) => AnnouncementController(),
+            lazy: false,
+          ),
+        ],
+        child: MaterialApp(
           title: 'Matus',
           theme: ThemeData(
             iconTheme: const IconThemeData(color: AppColor.primaryColor),
             primarySwatch: AppColor.primaryColor,
             visualDensity: VisualDensity.adaptivePlatformDensity,
           ),
-          onGenerateRoute: (settings) {
-            switch (settings.name) {
-              case '/announcement_edit':
-                return MaterialPageRoute(
-                    builder: (_) => AnnouncementEditScreen(
-                        settings.arguments as Announcement));
-
-              case '/announcement_open':
-                return MaterialPageRoute(
-                    builder: (_) => AnnouncementOpenScreen(
-                        settings.arguments as Announcement));
-              default:
-                return MaterialPageRoute(
-                    builder: (_) => MainScreen(), settings: settings);
-            }
-          }),
-    );
+          onGenerateRoute: RouteGenerator.generateRoute,
+        ));
   }
 }

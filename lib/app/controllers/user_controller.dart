@@ -7,11 +7,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class UserController extends ChangeNotifier {
   UserController() {
     loadCurrentUser();
+    loadAllUsers();
   }
 
   final firebase.FirebaseAuth _fauth = firebase.FirebaseAuth.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
+  List<User> allUsers = [];
 
   DocumentReference get firestoreUserRef =>
       FirebaseFirestore.instance.doc('users/${user.id}');
@@ -22,6 +24,21 @@ class UserController extends ChangeNotifier {
     _fauth.signOut();
     user = null;
     notifyListeners();
+  }
+
+  Future<void> loadAllUsers() async {
+    final QuerySnapshot snapUsers = await firestore.collection('users').get();
+    allUsers = snapUsers.docs.map((d) => User.fromDocument(d)).toList();
+
+    notifyListeners();
+  }
+
+  User findUserById(String id) {
+    try {
+      return allUsers.firstWhere((user) => user.id == id);
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<void> loadCurrentUser() async {

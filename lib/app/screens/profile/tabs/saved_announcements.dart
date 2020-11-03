@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:matus_app/app/models/announcement_controller.dart';
-import 'package:matus_app/app/models/user_controller.dart';
+import 'package:matus_app/app/controllers/announcement_controller.dart';
+import 'package:matus_app/app/controllers/user_controller.dart';
 import 'package:matus_app/app/screens/announcement/components/announcement_list_tile.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
 import 'package:provider/provider.dart';

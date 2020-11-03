@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:matus_app/app/models/user_controller.dart';
+import 'package:matus_app/app/controllers/user_controller.dart';
 import 'package:matus_app/app/screens/announcement/announcement_screen.dart';
 
 import 'package:matus_app/app/screens/login/login_screen.dart';
+import 'package:matus_app/app/screens/login/chat_screen.dart';
+import 'package:matus_app/app/screens/profile/profile.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
 import 'package:provider/provider.dart';
-
-import '../../pages/mensagens.dart';
-import '../../pages/perfil.dart';
 import '../recycling/recycling_screen.dart';
 import 'tab_item.dart';
 
@@ -29,7 +28,7 @@ class _MainScreenState extends State<MainScreen> {
   static final List<Widget> _tabSelected = <Widget>[
     AnnouncementScreen(),
     RecyclingPage(),
-    MensagensPage(),
+    const ChatScreen(),
     PerfilPage(),
   ];
   @override

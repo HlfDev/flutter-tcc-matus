@@ -2,7 +2,7 @@ import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:matus_app/app/models/announcement.dart';
-import 'package:matus_app/app/models/announcement_controller.dart';
+import 'package:matus_app/app/controllers/announcement_controller.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
 import 'package:provider/provider.dart';
 
@@ -25,6 +25,16 @@ class AnnouncementEditScreen extends StatelessWidget {
           appBar: AppBar(
             title: Text(editing ? 'Editar Anúncio' : 'Criar Anúncio'),
             centerTitle: true,
+            actions: <Widget>[
+              if (editing)
+                IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () {
+                    context.read<AnnouncementController>().delete(announcement);
+                    Navigator.of(context).pop();
+                  },
+                )
+            ],
           ),
           backgroundColor: Colors.white,
           body: Form(

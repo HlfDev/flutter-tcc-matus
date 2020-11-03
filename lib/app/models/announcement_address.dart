@@ -1,4 +1,3 @@
-// Classe Endereço do Anúncio
 class AnnouncementAddress {
   String cep;
   String state;
@@ -6,7 +5,12 @@ class AnnouncementAddress {
   String neighbornhood;
 
   // Contrutor com atributos opcionais
-  AnnouncementAddress({this.cep, this.state, this.city, this.neighbornhood});
+  AnnouncementAddress({
+    this.cep,
+    this.state,
+    this.city,
+    this.neighbornhood,
+  });
 
   // Transforma um Map em Object
   AnnouncementAddress.fromMap(Map<String, dynamic> map) {
