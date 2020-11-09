@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
 import 'package:matus_app/app/controllers/user_controller.dart';
+import 'package:matus_app/app/screens/base/main_screen.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
 import 'package:provider/provider.dart';
 
@@ -20,14 +21,17 @@ class _AccountSettingsTabState extends State<AccountSettingsTab> {
       child: Consumer<UserController>(builder: (_, userManager, __) {
         return Column(
           children: [
-            Container(
-                width: 150.0,
-                height: 150.0,
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                        fit: BoxFit.fill,
-                        image: NetworkImage(userManager.user.photoUrl)))),
+            if (userManager.isLoggedIn)
+              Container(
+                  width: 150.0,
+                  height: 150.0,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                          fit: BoxFit.fill,
+                          image: NetworkImage(userManager.user.photoUrl))))
+            else
+              Container(),
             FlatButton(
               onPressed: () {
                 // showModalBottomSheet(
@@ -70,6 +74,8 @@ class _AccountSettingsTabState extends State<AccountSettingsTab> {
               onPressed: () {
                 setState(() {
                   userManager.signOut();
+                  Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => MainScreen()));
                 });
               },
               icon: const Icon(Icons.account_box),

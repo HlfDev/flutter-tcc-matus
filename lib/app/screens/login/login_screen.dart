@@ -36,7 +36,25 @@ class LoginScreen extends StatelessWidget {
                 child: Form(
                   key: formKey,
                   child: Consumer<UserController>(
-                    builder: (_, userManager, child) {
+                    builder: (_, userController, child) {
+                      if (userController.loadingFace) {
+                        return Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation(
+                                Theme.of(context).primaryColor),
+                          ),
+                        );
+                      }
+                      if (userController.loading) {
+                        return Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation(
+                                Theme.of(context).primaryColor),
+                          ),
+                        );
+                      }
                       return ListView(
                         padding: const EdgeInsets.all(16),
                         shrinkWrap: true,
@@ -45,29 +63,38 @@ class LoginScreen extends StatelessWidget {
                             darkMode: true,
                             text: 'Continuar com Google',
                             onPressed: () async {
-                              await userManager.signInWithGoogle();
-                              Navigator.pop(context);
+                              await userController.signInWithGoogle(
+                                  onFail: (e) {
+                                scaffoldKey.currentState.showSnackBar(SnackBar(
+                                  content: Text('Falha ao entrar: $e'),
+                                  backgroundColor: Colors.red,
+                                ));
+                              }, onSuccess: () {
+                                Navigator.of(context).pop();
+                              });
                             },
                           ),
                           SizedBox(
                             height: 40.0,
                             child: FacebookSignInButton(
-                              borderRadius: 5.0,
-                              text: '    Continuar com Facebook',
-                              onPressed: () {},
-                            ),
+                                borderRadius: 5.0,
+                                text: '    Continuar com Facebook',
+                                onPressed: () async {
+                                  await userController.signInWithFacebook(
+                                      onFail: (e) {
+                                    scaffoldKey.currentState
+                                        .showSnackBar(SnackBar(
+                                      content: Text('Falha ao entrar: $e'),
+                                      backgroundColor: Colors.red,
+                                    ));
+                                  }, onSuccess: () {
+                                    Navigator.of(context).pop();
+                                  });
+                                }),
                           )
                         ],
                       );
                     },
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: FlatButton(
-                        onPressed: () {},
-                        padding: EdgeInsets.zero,
-                        child: const Text('Esqueci minha senha'),
-                      ),
-                    ),
                   ),
                 ),
               ),

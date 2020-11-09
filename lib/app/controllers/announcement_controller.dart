@@ -5,13 +5,14 @@ import '../models/announcement.dart';
 
 class AnnouncementController extends ChangeNotifier {
   AnnouncementController() {
-    loadAnnouncement();
+    loadAllAnnouncements();
   }
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   List<Announcement> allAnnouncements = [];
 
   String _search = '';
   String _category = '';
+  String _location = '';
 
   String get search => _search;
   set search(String value) {
@@ -22,6 +23,12 @@ class AnnouncementController extends ChangeNotifier {
   String get category => _category;
   set category(String value) {
     _category = value;
+    notifyListeners();
+  }
+
+  String get location => _location;
+  set location(String value) {
+    _location = value;
     notifyListeners();
   }
 
@@ -57,10 +64,11 @@ class AnnouncementController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadAnnouncement() async {
+  Future<void> loadAllAnnouncements() async {
     final QuerySnapshot snapAnnouncements = await firestore
         .collection("announcements")
         .where('deleted', isEqualTo: false)
+        .orderBy('announcementDate')
         .get();
     allAnnouncements = snapAnnouncements.docs
         .map((d) => Announcement.fromDocument(d))
@@ -71,7 +79,7 @@ class AnnouncementController extends ChangeNotifier {
 
   List<Announcement> findAnnouncementsCurrentUser(String user) {
     try {
-      return allAnnouncements.where((l) => l.user == user).toList();
+      return allAnnouncements.where((a) => a.user == user).toList();
     } catch (e) {
       return null;
     }
@@ -81,7 +89,7 @@ class AnnouncementController extends ChangeNotifier {
       List<String> savedAnnouncements) {
     try {
       return allAnnouncements
-          .where((l) => savedAnnouncements.contains(l.id))
+          .where((a) => savedAnnouncements.contains(a.id))
           .toList();
     } catch (e) {
       return null;

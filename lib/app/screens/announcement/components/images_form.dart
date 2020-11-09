@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -51,9 +52,14 @@ class _ImagesFormState extends State<ImagesForm> {
                     fit: StackFit.expand,
                     children: <Widget>[
                       if (image is String)
-                        Image.network(
-                          image,
-                          fit: BoxFit.cover,
+                        CachedNetworkImage(
+                          imageUrl: image,
+                          progressIndicatorBuilder:
+                              (context, url, downloadProgress) =>
+                                  CircularProgressIndicator(
+                                      value: downloadProgress.progress),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
                         )
                       else
                         Image.file(
@@ -88,18 +94,20 @@ class _ImagesFormState extends State<ImagesForm> {
                           color: Theme.of(context).primaryColor,
                           iconSize: 50,
                           onPressed: () {
-                            if (Platform.isAndroid) {
-                              showModalBottomSheet(
-                                  context: context,
-                                  builder: (_) => ImageTypeSelector(
-                                        onImageSelected: onImageSelected,
-                                      ));
-                            } else {
-                              showCupertinoModalPopup(
-                                  context: context,
-                                  builder: (_) => ImageTypeSelector(
-                                        onImageSelected: onImageSelected,
-                                      ));
+                            if (imagesLength < 5) {
+                              if (Platform.isAndroid) {
+                                showModalBottomSheet(
+                                    context: context,
+                                    builder: (_) => ImageTypeSelector(
+                                          onImageSelected: onImageSelected,
+                                        ));
+                              } else {
+                                showCupertinoModalPopup(
+                                    context: context,
+                                    builder: (_) => ImageTypeSelector(
+                                          onImageSelected: onImageSelected,
+                                        ));
+                              }
                             }
                           },
                         ),

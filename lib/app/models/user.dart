@@ -1,13 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class User {
-  User({this.id, this.name, this.photoUrl, this.loginType, this.date});
+  User(
+      {this.id,
+      this.name,
+      this.photoUrl,
+      this.loginType,
+      this.accountDate,
+      this.savedAnnouncements});
 
   String id;
   String name;
   String photoUrl;
   String loginType;
-  Timestamp date = Timestamp.now();
+  Timestamp accountDate;
   List<String> savedAnnouncements;
 
   DocumentReference get firestoreUserRef =>
@@ -22,8 +28,8 @@ class User {
       'name': name,
       'photoUrl': photoUrl,
       'loginType': loginType,
-      'date': date,
-      'savedAnnouncements': savedAnnouncements,
+      'accountDate': accountDate ?? Timestamp.now(),
+      'savedAnnouncements': savedAnnouncements ?? [],
     };
   }
 
@@ -32,7 +38,7 @@ class User {
     name = document.get('name') as String;
     photoUrl = document.get('photoUrl') as String;
     loginType = document.get('loginType') as String;
-    date = document['date'] as Timestamp;
+    accountDate = document['accountDate'] as Timestamp;
     savedAnnouncements = List<String>.from(
         document.data()['savedAnnouncements'] as List<dynamic> ?? []);
   }

@@ -3,11 +3,12 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:matus_app/app/models/message.dart';
 
 import 'package:matus_app/app/models/user.dart';
-import 'package:matus_app/app/screens/messages/text_composer.dart';
+import 'package:matus_app/app/screens/messages/components/text_composer.dart';
 
-import 'chat_message.dart';
+import 'components/chat_tile.dart';
 
 class ChatScreen extends StatefulWidget {
   final User userReceptor;
@@ -30,6 +31,8 @@ class _ChatScreenState extends State<ChatScreen> {
       "userReceptor": widget.userReceptor.id,
       "userSender": widget.userSender.id,
       "messageDate": Timestamp.now(),
+      "photoUrl": null,
+      "text": null,
     };
 
     if (imgFile != null) {
@@ -50,19 +53,32 @@ class _ChatScreenState extends State<ChatScreen> {
       setState(() {
         _isLoading = false;
       });
-    }
+    } else {}
 
     if (text != null) data['text'] = text;
 
     FirebaseFirestore.instance.collection('messages').add(data);
   }
 
+  List<Message> filteredMessages = [];
+  List<Message> allMessages = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: const Text('App'),
+        title: Row(
+          children: [
+            CircleAvatar(
+              backgroundImage: NetworkImage(widget.userReceptor.photoUrl),
+              backgroundColor: Colors.transparent,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 24.0),
+              child: Text(widget.userReceptor.name),
+            ),
+          ],
+        ),
         centerTitle: true,
         elevation: 0,
       ),
@@ -72,9 +88,7 @@ class _ChatScreenState extends State<ChatScreen> {
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('messages')
-                  .where('userSender', isEqualTo: widget.userReceptor.id)
-                  .where('userReceptor', isEqualTo: widget.userSender.id)
-                  //.orderBy('messageDate')
+                  .orderBy('messageDate')
                   .snapshots(),
               builder: (context, snapshot) {
                 switch (snapshot.connectionState) {
@@ -84,17 +98,30 @@ class _ChatScreenState extends State<ChatScreen> {
                       child: CircularProgressIndicator(),
                     );
                   default:
-                    final List<DocumentSnapshot> documents =
-                        snapshot.data.docs.reversed.toList();
+                    allMessages = snapshot.data.docs.reversed
+                        .map((d) => Message.fromDocument(d))
+                        .toList();
+
+                    filteredMessages = [];
+                    for (final Message message in allMessages) {
+                      if ((message.userReceptor == widget.userReceptor.id ||
+                              message.userReceptor == widget.userSender.id) &&
+                          (message.userSender == widget.userSender.id ||
+                              message.userSender == widget.userReceptor.id)) {
+                        filteredMessages.add(message);
+                      }
+                    }
 
                     return ListView.builder(
-                        itemCount: documents.length,
+                        itemCount: filteredMessages.length,
                         reverse: true,
                         itemBuilder: (context, index) {
                           return ChatMessage(
-                              documents[index].data(),
-                              documents[index]['userSender'] ==
-                                  widget.userSender.id);
+                              filteredMessages[index],
+                              filteredMessages[index].userSender ==
+                                  widget.userSender?.id,
+                              widget.userReceptor,
+                              widget.userSender);
                         });
                 }
               },

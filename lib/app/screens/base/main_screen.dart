@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:matus_app/app/controllers/user_controller.dart';
 import 'package:matus_app/app/screens/announcement/announcement_screen.dart';
 
 import 'package:matus_app/app/screens/login/login_screen.dart';
-import 'package:matus_app/app/screens/login/chat_screen.dart';
+import 'package:matus_app/app/screens/messages/message_screen.dart';
 import 'package:matus_app/app/screens/profile/profile.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
 import 'package:provider/provider.dart';
@@ -23,12 +24,24 @@ final tabs = [
 ];
 
 class _MainScreenState extends State<MainScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  }
+
   int selectedPosition = 0;
 
   static final List<Widget> _tabSelected = <Widget>[
     AnnouncementScreen(),
     RecyclingPage(),
-    const ChatScreen(),
+    Consumer<UserController>(builder: (_, userController, __) {
+      if (userController.isLoggedIn == true) {
+        return MessageScreen(user: userController.user);
+      }
+      return Container();
+    }),
     PerfilPage(),
   ];
   @override

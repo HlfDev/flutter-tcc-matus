@@ -19,7 +19,7 @@ class Message {
     messageDate = document['messageDate'] as Timestamp;
     photoUrl = document['photoUrl'] as String;
     text = document['text'] as String;
-    text = document['userReceptor'] as String;
+    userReceptor = document['userReceptor'] as String;
     userSender = document['userSender'] as String;
   }
 }

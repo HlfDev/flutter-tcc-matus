@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Matus</string>
+
+    <string name="facebook_app_id">633901883944296</string>
+
+    <string name="fb_login_protocol_scheme">fb633901883944296</string>
+    <string name ="api_key">AIzaSyCXhsY3r1G0xuj7fhhcZon2i_EU_VDtdXU</string>
+</resources>

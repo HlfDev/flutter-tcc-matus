@@ -29,11 +29,11 @@ class Announcement extends ChangeNotifier {
   String description;
   List<String> photos;
   String category;
-  num price;
+  String price;
   String unity;
-  int amount;
-  Timestamp announcementDate = Timestamp.now();
-  bool deleted = false;
+  String weigth;
+  Timestamp announcementDate;
+  bool deleted;
   List<dynamic> newPhotos;
   String user;
   AnnouncementAddress announcementAddress;
@@ -45,7 +45,7 @@ class Announcement extends ChangeNotifier {
       this.category,
       this.price,
       this.unity,
-      this.amount,
+      this.weigth,
       this.announcementDate,
       this.deleted = false,
       this.photos,
@@ -61,17 +61,17 @@ class Announcement extends ChangeNotifier {
     description = document['description'] as String;
     photos = List<String>.from(document.data()['photos'] as List<dynamic>);
     category = document['category'] as String;
-    price = document['price'] as num;
+    price = document['price'] as String;
     unity = document['unity'] as String;
-    amount = document['amount'] as int;
+    weigth = document['weigth'] as String;
     announcementDate = document['announcementDate'] as Timestamp;
-    deleted = (document['deleted'] ?? false) as bool;
+    deleted = document['deleted'] as bool;
     user = document['user'] as String;
     announcementAddress = AnnouncementAddress.fromMap(
         document['announcementAddress'] as Map<String, dynamic>);
   }
 
-  Future<void> save() async {
+  Future<void> saveData() async {
     loading = true;
 
     final Map<String, dynamic> data = {
@@ -81,10 +81,10 @@ class Announcement extends ChangeNotifier {
       'category': category,
       'price': price,
       'unity': unity,
-      'amount': amount,
-      'announcementDate': announcementDate,
+      'weigth': weigth,
+      'announcementDate': announcementDate ?? Timestamp.now(),
       'user': _fauth.currentUser.uid,
-      'deleted': deleted,
+      'deleted': deleted ?? false,
       'announcementAddress': announcementAddress.toMap(),
     };
 
@@ -138,7 +138,7 @@ class Announcement extends ChangeNotifier {
       category: category,
       price: price,
       unity: unity,
-      amount: amount,
+      weigth: weigth,
       announcementDate: announcementDate,
       deleted: deleted,
       user: user,

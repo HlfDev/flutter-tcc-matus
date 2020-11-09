@@ -30,9 +30,12 @@ class _CategoryItensState extends State<CategoryList> {
         return 'Madeira';
         break;
       case 5:
-        return 'Peças';
+        return 'Bateria';
         break;
       case 6:
+        return 'Peças';
+        break;
+      case 7:
         return 'Óleo';
         break;
       default:
@@ -131,26 +134,24 @@ class CategoryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 60,
-      height: 60,
+      width: 80,
+      height: 80,
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: SvgPicture.asset(
-              assetLocation,
-              width: 20.0,
-              height: 20.0,
-            ),
+          SvgPicture.asset(
+            assetLocation,
+            width: 20.0,
+            height: 20.0,
+          ),
+          const SizedBox(
+            height: 6.0,
           ),
           Align(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                text,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 12.0),
-              ),
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 12.0),
             ),
           ),
         ],

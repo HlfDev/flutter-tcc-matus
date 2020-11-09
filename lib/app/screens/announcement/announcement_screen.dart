@@ -1,25 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_maps_webservice/places.dart';
+
 import 'package:matus_app/app/controllers/announcement_controller.dart';
 import 'package:matus_app/app/controllers/user_controller.dart';
-import 'package:matus_app/app/screens/announcement/components/announcement_category.dart';
+import 'package:matus_app/app/screens/announcement/components/announcement_category_list.dart';
 import 'package:matus_app/app/screens/announcement/components/announcement_list_tile.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
 import 'package:matus_app/app/widgets/icons.dart';
-import 'package:matus_app/app/widgets/location_dialog.dart';
+
 import 'package:provider/provider.dart';
 
 import 'components/search_dialog.dart';
 
-class AnnouncementScreen extends StatelessWidget {
+class AnnouncementScreen extends StatefulWidget {
+  static const kGoogleApiKey = "AIzaSyCXhsY3r1G0xuj7fhhcZon2i_EU_VDtdXU";
+
+  @override
+  _AnnouncementScreenState createState() => _AnnouncementScreenState();
+}
+
+class _AnnouncementScreenState extends State<AnnouncementScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         centerTitle: true,
         title: Consumer<AnnouncementController>(
-          builder: (_, announcementManager, __) {
-            if (announcementManager.search.isEmpty) {
+          builder: (_, announcementController, __) {
+            if (announcementController.search.isEmpty) {
               return const Text('Anúncios');
             } else {
               return LayoutBuilder(
@@ -29,15 +40,15 @@ class AnnouncementScreen extends StatelessWidget {
                       final search = await showDialog<String>(
                           context: context,
                           builder: (_) =>
-                              SearchDialog(announcementManager.search));
+                              SearchDialog(announcementController.search));
                       if (search != null) {
-                        announcementManager.search = search;
+                        announcementController.search = search;
                       }
                     },
                     child: SizedBox(
                         width: constraints.biggest.width,
                         child: Text(
-                          announcementManager.search,
+                          announcementController.search,
                           textAlign: TextAlign.center,
                         )),
                   );
@@ -48,17 +59,17 @@ class AnnouncementScreen extends StatelessWidget {
         ),
         actions: <Widget>[
           Consumer<AnnouncementController>(
-            builder: (_, announcementManager, __) {
-              if (announcementManager.search.isEmpty) {
+            builder: (_, announcementController, __) {
+              if (announcementController.search.isEmpty) {
                 return IconButton(
                   icon: const Icon(Icons.search),
                   onPressed: () async {
                     final search = await showDialog<String>(
                         context: context,
                         builder: (_) =>
-                            SearchDialog(announcementManager.search));
+                            SearchDialog(announcementController.search));
                     if (search != null) {
-                      announcementManager.search = search;
+                      announcementController.search = search;
                     }
                   },
                 );
@@ -66,7 +77,7 @@ class AnnouncementScreen extends StatelessWidget {
                 return IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: () async {
-                    announcementManager.search = '';
+                    announcementController.search = '';
                   },
                 );
               }
@@ -78,7 +89,7 @@ class AnnouncementScreen extends StatelessWidget {
           builder: (_, announcementController, userController, __) {
         return RefreshIndicator(
           onRefresh: () async {
-            await announcementController.loadAnnouncement();
+            await announcementController.loadAllAnnouncements();
             await userController.loadAllUsers();
           },
           child: Column(
@@ -86,16 +97,41 @@ class AnnouncementScreen extends StatelessWidget {
               const HorizontalIconTextWithArrow(
                   'Localização', Icons.my_location, MainAxisAlignment.center),
               FlatButton(
-                  onPressed: () {
-                    showDialog(
+                  onPressed: () async {
+                    final Prediction p = await PlacesAutocomplete.show(
                         context: context,
-                        builder: (BuildContext context) {
-                          return const LocationDialog();
-                        });
+                        startText: announcementController.location,
+                        apiKey: AnnouncementScreen.kGoogleApiKey,
+                        language: "pt",
+                        hint: "Pesquisar",
+                        components: [Component(Component.country, "br")]);
+
+                    if (p != null) {
+                      setState(() {
+                        announcementController.location = p.description;
+                      });
+                    }
                   },
-                  child: Text(
-                    'Clique para alterar a localização de busca',
-                    style: TextStyle(fontSize: 12.0, color: Colors.grey[400]),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        announcementController.location.isEmpty
+                            ? 'Clique para selecionar a localização de busca'
+                            : announcementController.location,
+                        style:
+                            const TextStyle(fontSize: 14.0, color: Colors.grey),
+                      ),
+                      if (announcementController.location.isEmpty)
+                        Container()
+                      else
+                        IconButton(
+                          icon: const Icon(Icons.cancel),
+                          onPressed: () {
+                            announcementController.location = '';
+                          },
+                        )
+                    ],
                   )),
               const HorizontalIconTextWithArrow('Filtrar por Categoria',
                   Icons.category, MainAxisAlignment.start),
@@ -120,27 +156,23 @@ class AnnouncementScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(16.0),
+                          padding: const EdgeInsets.only(top: 24.0),
                           child: SvgPicture.asset(
                             'assets/images/announcement_screen/announcement_not_found.svg',
-                            width: 300.0,
-                            height: 300.0,
+                            width: MediaQuery.of(context).size.width * 0.3,
+                            height: MediaQuery.of(context).size.height * 0.3,
                           ),
                         ),
-                        const Text(
-                          'Nenhum Anúncio foi encontrado :(',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              color: AppColor.primaryColor,
-                              fontSize: 18.0),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 24.0),
+                          child: Text(
+                            'Nenhum Anúncio foi encontrado :(',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w400,
+                                color: AppColor.primaryColor,
+                                fontSize: 18.0),
+                          ),
                         ),
-                        RaisedButton(
-                          onPressed: () async {
-                            await announcementController.loadAnnouncement();
-                            await userController.loadAllUsers();
-                          },
-                          child: const Text('Tentar Novamente'),
-                        )
                       ],
                     );
                   }

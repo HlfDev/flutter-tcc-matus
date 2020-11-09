@@ -1,4 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:matus_app/app/helpers/datetime_converter.dart';
+
 import 'package:matus_app/app/models/announcement.dart';
 
 class AnnouncementListTile extends StatelessWidget {
@@ -25,7 +28,15 @@ class AnnouncementListTile extends StatelessWidget {
                 children: <Widget>[
                   AspectRatio(
                     aspectRatio: 1,
-                    child: Image.network(announcement.photos.first),
+                    child: CachedNetworkImage(
+                      imageUrl: announcement.photos.first,
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) =>
+                              CircularProgressIndicator(
+                                  value: downloadProgress.progress),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
+                    ),
                   ),
                   const SizedBox(
                     width: 16,
@@ -43,14 +54,14 @@ class AnnouncementListTile extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'R\$ ${announcement.price.toStringAsFixed(2)}',
+                          'R\$ ${announcement.price}',
                           style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w800,
                               color: Theme.of(context).primaryColor),
                         ),
                         Text(
-                            '29 de outubro, ${announcement.announcementAddress.city} - ${announcement.announcementAddress.state}',
+                            '${convertStamp(announcement.announcementDate)}, ${announcement.announcementAddress.city} - ${announcement.announcementAddress.state}',
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w800,

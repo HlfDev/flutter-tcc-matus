@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:matus_app/app/helpers/firebase.errors.dart';
 import 'package:matus_app/app/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -19,6 +21,20 @@ class UserController extends ChangeNotifier {
       FirebaseFirestore.instance.doc('users/${user.id}');
   bool get isLoggedIn => user != null;
   User user;
+
+  bool _loading = false;
+  bool get loading => _loading;
+  set loading(bool value) {
+    _loading = value;
+    notifyListeners();
+  }
+
+  bool _loadingFace = false;
+  bool get loadingFace => _loadingFace;
+  set loadingFace(bool value) {
+    _loadingFace = value;
+    notifyListeners();
+  }
 
   void signOut() {
     _fauth.signOut();
@@ -72,10 +88,8 @@ class UserController extends ChangeNotifier {
 
   Future<void> signInWithGoogle({Function onFail, Function onSuccess}) async {
     if (_fauth.currentUser != null) return;
+    loading = true;
     try {
-      // ignore: unused_local_variable
-      firebase.UserCredential userCredential;
-
       final GoogleSignInAccount googleSignInAccount =
           await googleSignIn.signIn();
 
@@ -98,13 +112,54 @@ class UserController extends ChangeNotifier {
           name: firebaseUser.displayName,
           photoUrl: firebaseUser.photoURL,
           loginType: "Google",
-          date: Timestamp.now(),
+          accountDate: Timestamp.now(),
+          savedAnnouncements: [],
         );
 
         await user.saveData();
+        onSuccess();
       }
     } catch (e) {
-      // ignore: avoid_print
+      onFail(getErrorString(e.code as String));
     }
+    loading = false;
+  }
+
+  Future<void> signInWithFacebook({Function onFail, Function onSuccess}) async {
+    if (_fauth.currentUser != null) return;
+    loadingFace = true;
+    final result = await FacebookLogin().logIn(['email', 'public_profile']);
+
+    switch (result.status) {
+      case FacebookLoginStatus.loggedIn:
+        final credential =
+            firebase.FacebookAuthProvider.credential(result.accessToken.token);
+
+        final authResult = await _fauth.signInWithCredential(credential);
+
+        if (authResult.user != null) {
+          final firebaseUser = authResult.user;
+
+          user = User(
+            id: firebaseUser.uid,
+            name: firebaseUser.displayName,
+            photoUrl: firebaseUser.photoURL,
+            loginType: "Facebook",
+            accountDate: Timestamp.now(),
+            savedAnnouncements: [],
+          );
+
+          await user.saveData();
+          onSuccess();
+        }
+        break;
+      case FacebookLoginStatus.cancelledByUser:
+        break;
+      case FacebookLoginStatus.error:
+        onFail(result.errorMessage);
+        break;
+    }
+
+    loadingFace = false;
   }
 }

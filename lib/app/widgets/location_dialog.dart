@@ -25,7 +25,23 @@ class LocationDialog extends StatelessWidget {
                   height: 150.0,
                   child: SvgPicture.asset(
                       "assets/images/adverts_screen/my_location.svg")),
-              const DropDownButton('Estado'),
+              DropdownButtonFormField(
+                hint: const Text('Estado'),
+                items: [
+                  'G - Grama',
+                  'KG - Quilograma',
+                  'T - Tonelada',
+                  'L - Litro',
+                ].map(
+                  (val) {
+                    return DropdownMenuItem<String>(
+                      value: val,
+                      child: Text(val),
+                    );
+                  },
+                ).toList(),
+                onChanged: (text) {},
+              ),
               const DropDownButton('Cidade'),
               const DropDownButton('Bairro'),
               SizedBox(

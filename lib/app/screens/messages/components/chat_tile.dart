@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:matus_app/app/models/message.dart';
+import 'package:matus_app/app/models/user.dart';
 
 class ChatMessage extends StatelessWidget {
   // ignore: avoid_positional_boolean_parameters
-  const ChatMessage(this.data, this.mine);
+  const ChatMessage(
+      // ignore: avoid_positional_boolean_parameters
+      this.message,
+      // ignore: avoid_positional_boolean_parameters
+      this.mine,
+      this.userReceptor,
+      this.userSender);
 
-  final Map<String, dynamic> data;
+  final Message message;
   final bool mine;
+  final User userReceptor;
+  final User userSender;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +28,7 @@ class ChatMessage extends StatelessWidget {
               padding: const EdgeInsets.only(right: 16),
               child: CircleAvatar(
                 backgroundImage: NetworkImage(
-                  data['photo'] as String,
+                  userReceptor.photoUrl,
                 ),
               ),
             )
@@ -29,14 +39,14 @@ class ChatMessage extends StatelessWidget {
               crossAxisAlignment:
                   mine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: <Widget>[
-                if (data['photo'] != null)
+                if (message.photoUrl != null)
                   Image.network(
-                    data['photo'] as String,
+                    message.photoUrl,
                     width: 250,
                   )
                 else
                   Text(
-                    data['text'] as String,
+                    message.text,
                     textAlign: mine ? TextAlign.end : TextAlign.start,
                     style: const TextStyle(fontSize: 16),
                   ),
@@ -55,7 +65,7 @@ class ChatMessage extends StatelessWidget {
               padding: const EdgeInsets.only(left: 16),
               child: CircleAvatar(
                 backgroundImage: NetworkImage(
-                  data['photo'] as String,
+                  userSender.photoUrl,
                 ),
               ),
             )

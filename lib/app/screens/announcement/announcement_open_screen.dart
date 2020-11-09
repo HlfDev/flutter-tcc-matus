@@ -1,9 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_pro/carousel_pro.dart';
 import 'package:flutter/material.dart';
+import 'package:matus_app/app/controllers/announcement_controller.dart';
 import 'package:matus_app/app/models/announcement.dart';
 import 'package:matus_app/app/controllers/user_controller.dart';
 import 'package:matus_app/app/models/user.dart';
 import 'package:matus_app/app/screens/messages/chat_screen.dart';
+import 'package:matus_app/app/themes/app_colors.dart';
+
 import 'package:provider/provider.dart';
 
 class AnnouncementOpenScreen extends StatelessWidget {
@@ -13,63 +17,98 @@ class AnnouncementOpenScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = Theme.of(context).primaryColor;
+    return Consumer<UserController>(builder: (_, userController, __) {
+      return Scaffold(
+        floatingActionButton: userController.isLoggedIn == true
+            ? userController.user.id != announcement.user
+                ? FloatingActionButton(
+                    onPressed: () {
+                      final User userReceptor = context
+                          .read<UserController>()
+                          .findUserById(announcement.user);
+                      final User userSender =
+                          context.read<UserController>().user;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(announcement.title),
-        centerTitle: true,
-        actions: <Widget>[
-          Consumer<UserController>(
-            builder: (_, userManager, __) {
-              if (userManager.isLoggedIn == true) {
-                if (announcement.user == userManager.user.id) {
-                  return IconButton(
-                    icon: const Icon(Icons.edit),
-                    onPressed: () {
-                      Navigator.of(context).pushReplacementNamed(
-                          '/announcement_edit',
-                          arguments: announcement);
+                      if (userSender.id == announcement.id) {
+                      } else {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ChatScreen(
+                                userReceptor: userReceptor,
+                                userSender: userSender)));
+                      }
                     },
-                  );
-                } else if (userManager.user.savedAnnouncements
-                    .contains(announcement.id)) {
-                  return IconButton(
-                    icon: const Icon(Icons.favorite),
+                    child: const Icon(Icons.chat),
+                  )
+                : FloatingActionButton(
                     onPressed: () {
-                      userManager.removeSavedAnnouncement(announcement.id);
+                      context
+                          .read<AnnouncementController>()
+                          .delete(announcement);
+                      Navigator.of(context).pop();
                     },
-                  );
+                    child: const Icon(Icons.delete),
+                  )
+            : Container(),
+        appBar: AppBar(
+          title: Text(announcement.title),
+          centerTitle: true,
+          actions: <Widget>[
+            Consumer<UserController>(
+              builder: (_, userController, __) {
+                if (userController.isLoggedIn == true) {
+                  if (announcement.user == userController.user.id) {
+                    return IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () {
+                        Navigator.of(context).pushReplacementNamed(
+                            '/announcement_edit',
+                            arguments: announcement);
+                      },
+                    );
+                  } else if (userController.user.savedAnnouncements
+                      .contains(announcement.id)) {
+                    return IconButton(
+                      icon: const Icon(Icons.favorite),
+                      onPressed: () {
+                        userController.removeSavedAnnouncement(announcement.id);
+                      },
+                    );
+                  } else {
+                    return IconButton(
+                      icon: const Icon(Icons.favorite_border),
+                      onPressed: () {
+                        userController.addSavedAnnouncement(announcement.id);
+                      },
+                    );
+                  }
                 } else {
-                  return IconButton(
-                    icon: const Icon(Icons.favorite_border),
-                    onPressed: () {
-                      userManager.addSavedAnnouncement(announcement.id);
-                    },
-                  );
+                  return Container();
                 }
-              } else {
-                return Container();
-              }
-            },
-          )
-        ],
-      ),
-      backgroundColor: Colors.white,
-      body: Consumer<UserController>(builder: (_, userController, __) {
-        final User user = userController.findUserById(announcement.user);
-        return ListView(
+              },
+            )
+          ],
+        ),
+        backgroundColor: Colors.white,
+        body: ListView(
           children: <Widget>[
             AspectRatio(
               aspectRatio: 1.5,
               child: Carousel(
                 images: announcement.photos.map((url) {
-                  return NetworkImage(url);
+                  return CachedNetworkImage(
+                    imageUrl: url,
+                    progressIndicatorBuilder:
+                        (context, url, downloadProgress) =>
+                            CircularProgressIndicator(
+                                value: downloadProgress.progress),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                  );
                 }).toList(),
-                dotSize: 4,
+                dotSize: 6,
                 dotSpacing: 15,
                 dotBgColor: Colors.transparent,
-                dotColor: primaryColor,
+                dotColor: AppColor.primaryColor,
                 autoplay: false,
               ),
             ),
@@ -79,65 +118,133 @@ class AnnouncementOpenScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    announcement.title,
+                    'R\$ ${announcement.price}',
                     style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.w600),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      'Valor',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 13,
-                      ),
+                      fontSize: 32.0,
+                      fontWeight: FontWeight.bold,
                     ),
+                  ),
+                  const SizedBox(
+                    height: 8.0,
                   ),
                   Text(
-                    'R\$ 19.99',
+                    announcement.title,
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  const Text(
+                    'Anúnciado em 03/03/20 as 22:00',
                     style: TextStyle(
-                      fontSize: 22.0,
-                      fontWeight: FontWeight.bold,
-                      color: primaryColor,
+                      color: Colors.grey,
                     ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 16, bottom: 8),
-                    child: Text(
-                      'Descrição',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  const Divider(
+                    height: 40.0,
+                    thickness: 1.0,
+                  ),
+                  const Text(
+                    'Descrição',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
+                  ),
+                  const SizedBox(
+                    height: 8.0,
                   ),
                   Text(
                     announcement.description,
                     style: const TextStyle(fontSize: 16),
                   ),
-                  RaisedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (context) => ChatScreen(
-                                    userReceptor: user,
-                                    userSender: userController.user,
-                                  )),
-                        );
-                      },
-                      child: const Text('Conversar com Anúnciante')),
-                  Container(
-                      width: 150.0,
-                      height: 150.0,
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                              fit: BoxFit.fill,
-                              image: NetworkImage(user.photoUrl)))),
+                  const Divider(
+                    height: 40.0,
+                    thickness: 1.0,
+                  ),
+                  const Text(
+                    'Detalhes',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  Text(
+                    'Categoria: ${announcement.category}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  Text(
+                    'Peso: ${announcement.weigth} ${announcement.unity}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  const Divider(
+                    height: 40.0,
+                    thickness: 1.0,
+                  ),
+                  const Text(
+                    'Localização',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  Text(
+                    'CEP: ${announcement.announcementAddress.cep}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  Text(
+                    'Cidade/Estado: ${announcement.announcementAddress.city} - ${announcement.announcementAddress.state}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  Text(
+                    'Bairro: ${announcement.announcementAddress.neighbornhood}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const Divider(
+                    height: 40.0,
+                    thickness: 1.0,
+                  ),
+                  const Text(
+                    'Anunciante',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  Text(
+                    'CEP: ${announcement.announcementAddress.cep}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
                 ],
               ),
             )
           ],
-        );
-      }),
-    );
+        ),
+      );
+    });
   }
 }

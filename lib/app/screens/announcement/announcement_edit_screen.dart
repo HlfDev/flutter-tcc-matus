@@ -6,7 +6,7 @@ import 'package:matus_app/app/controllers/announcement_controller.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
 import 'package:provider/provider.dart';
 
-import 'components/images_insert.dart';
+import 'components/images_form.dart';
 
 class AnnouncementEditScreen extends StatelessWidget {
   AnnouncementEditScreen(Announcement a)
@@ -25,16 +25,6 @@ class AnnouncementEditScreen extends StatelessWidget {
           appBar: AppBar(
             title: Text(editing ? 'Editar Anúncio' : 'Criar Anúncio'),
             centerTitle: true,
-            actions: <Widget>[
-              if (editing)
-                IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () {
-                    context.read<AnnouncementController>().delete(announcement);
-                    Navigator.of(context).pop();
-                  },
-                )
-            ],
           ),
           backgroundColor: Colors.white,
           body: Form(
@@ -51,7 +41,7 @@ class AnnouncementEditScreen extends StatelessWidget {
                         keyboardType: TextInputType.text,
                         initialValue: announcement.title,
                         validator: (name) {
-                          if (name.isEmpty) return 'Preencha o Titulo';
+                          if (name.isEmpty) return 'Preencha o titulo';
                           if (name.length < 6) return 'Título muito curto';
                           return null;
                         },
@@ -102,7 +92,7 @@ class AnnouncementEditScreen extends StatelessWidget {
                               keyboardType: TextInputType.number,
                               inputFormatters: [
                                 FilteringTextInputFormatter.digitsOnly,
-                                RealInputFormatter(),
+                                RealInputFormatter(centavos: true),
                               ],
                               initialValue: announcement.price != null
                                   ? announcement.price.toString()
@@ -113,8 +103,7 @@ class AnnouncementEditScreen extends StatelessWidget {
                                 }
                                 return null;
                               },
-                              onSaved: (price) =>
-                                  announcement.price = double.tryParse(price),
+                              onSaved: (price) => announcement.price = price,
                               cursorColor: AppColor.primaryColor,
                               decoration: const InputDecoration(
                                 icon: Icon(Icons.monetization_on),
@@ -131,22 +120,19 @@ class AnnouncementEditScreen extends StatelessWidget {
                           ),
                           Expanded(
                             child: TextFormField(
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                PesoInputFormatter(),
+                              ],
                               keyboardType: TextInputType.number,
-                              initialValue: announcement.amount != null
-                                  ? announcement.amount.toString()
+                              initialValue: announcement.weigth != null
+                                  ? announcement.weigth.toString()
                                   : '',
-                              validator: (amount) {
-                                if (amount.isEmpty) {
-                                  return 'Preencha a Quantidade';
-                                }
-                                return null;
-                              },
-                              onSaved: (amount) =>
-                                  announcement.amount = int.tryParse(amount),
+                              onSaved: (weigth) => announcement.weigth = weigth,
                               cursorColor: AppColor.primaryColor,
                               decoration: const InputDecoration(
                                 icon: Icon(Icons.donut_small),
-                                labelText: 'Quantidade',
+                                labelText: 'Peso (Opcional)',
                                 labelStyle: TextStyle(
                                   color: AppColor.primaryColor,
                                 ),
@@ -174,8 +160,13 @@ class AnnouncementEditScreen extends StatelessWidget {
                           Expanded(
                             child: DropdownButtonFormField(
                               hint: Text(
-                                  announcement.unity ?? 'Unidade de Medida'),
-                              items: ['KG', 'UN', 'LT'].map(
+                                  announcement.unity ?? 'Medida (Opcional)'),
+                              items: [
+                                'G - Grama',
+                                'KG - Quilograma',
+                                'T - Tonelada',
+                                'L - Litro',
+                              ].map(
                                 (val) {
                                   return DropdownMenuItem<String>(
                                     value: val,
@@ -204,8 +195,23 @@ class AnnouncementEditScreen extends StatelessWidget {
                           ),
                           Expanded(
                             child: DropdownButtonFormField(
+                              validator: (category) {
+                                if (announcement.category == null) {
+                                  return 'Selecione a Categoria';
+                                }
+                                return null;
+                              },
                               hint: Text(announcement.category ?? 'Categoria'),
-                              items: ['Papel', 'Vidro', 'Madeira'].map(
+                              items: [
+                                'Papel',
+                                'Plástico',
+                                'Vidro',
+                                'Metal',
+                                'Madeira',
+                                'Bateria',
+                                'Peças',
+                                'Óleo',
+                              ].map(
                                 (val) {
                                   return DropdownMenuItem<String>(
                                     value: val,
@@ -229,13 +235,16 @@ class AnnouncementEditScreen extends StatelessWidget {
                           FilteringTextInputFormatter.digitsOnly,
                           CepInputFormatter(),
                         ],
-                        initialValue:
-                            announcement.announcementAddress.cep ?? '',
+                        initialValue: announcement.announcementAddress.cep,
                         validator: (cep) {
                           if (cep.isEmpty) return 'Preencha o CEP';
-                          if (cep.length < 10) return 'CEP invalido';
+                          if (cep.length != 10) return 'CEP invalido';
+                          if (announcement.announcementAddress.city != null) {
+                            return 'CEP invalido';
+                          }
                           return null;
                         },
+                        onFieldSubmitted: (cep) async {},
                         onSaved: (cep) =>
                             announcement.announcementAddress.cep = cep,
                         cursorColor: AppColor.primaryColor,
@@ -262,7 +271,7 @@ class AnnouncementEditScreen extends StatelessWidget {
                                 ? () async {
                                     if (formKey.currentState.validate()) {
                                       formKey.currentState.save();
-                                      await announcement.save();
+                                      await announcement.saveData();
 
                                       context
                                           .read<AnnouncementController>()
