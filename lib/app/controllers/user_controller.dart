@@ -36,8 +36,8 @@ class UserController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void signOut() {
-    _fauth.signOut();
+  Future<void> signOut() async {
+    await _fauth.signOut();
     user = null;
     notifyListeners();
   }

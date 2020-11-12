@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:matus_app/app/helpers/datetime_converter.dart';
 import 'package:matus_app/app/models/message.dart';
 import 'package:matus_app/app/models/user.dart';
 
@@ -42,7 +43,8 @@ class ChatMessage extends StatelessWidget {
                 if (message.photoUrl != null)
                   Image.network(
                     message.photoUrl,
-                    width: 250,
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    fit: BoxFit.contain,
                   )
                 else
                   Text(
@@ -50,11 +52,14 @@ class ChatMessage extends StatelessWidget {
                     textAlign: mine ? TextAlign.end : TextAlign.start,
                     style: const TextStyle(fontSize: 16),
                   ),
-                const Text(
-                  'teste',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    convertStamptoTime(message.messageDate),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 )
               ],

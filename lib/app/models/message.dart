@@ -6,6 +6,7 @@ class Message {
   String text;
   String userReceptor;
   String userSender;
+  bool viewed = false;
 
   Message({
     this.messageDate,

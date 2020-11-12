@@ -47,5 +47,8 @@
     <string>Acessar camera para adicionar imagem</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>Acessar camera para adicionar imagem</string>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-6067918771202149~3150447374</string>
 </dict>
 </plist>
+

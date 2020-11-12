@@ -8,6 +8,7 @@ import 'package:matus_app/app/controllers/user_controller.dart';
 import 'package:matus_app/app/screens/announcement/components/announcement_category_list.dart';
 import 'package:matus_app/app/screens/announcement/components/announcement_list_tile.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
+import 'package:matus_app/app/utils/custom_admob.dart';
 import 'package:matus_app/app/widgets/icons.dart';
 
 import 'package:provider/provider.dart';
@@ -22,6 +23,8 @@ class AnnouncementScreen extends StatefulWidget {
 }
 
 class _AnnouncementScreenState extends State<AnnouncementScreen> {
+  CustomAdMob myCustomAdMob = CustomAdMob();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,99 +90,102 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
       ),
       body: Consumer2<AnnouncementController, UserController>(
           builder: (_, announcementController, userController, __) {
-        return RefreshIndicator(
-          onRefresh: () async {
-            await announcementController.loadAllAnnouncements();
-            await userController.loadAllUsers();
-          },
-          child: Column(
-            children: [
-              const HorizontalIconTextWithArrow(
-                  'Localização', Icons.my_location, MainAxisAlignment.center),
-              FlatButton(
-                  onPressed: () async {
-                    final Prediction p = await PlacesAutocomplete.show(
-                        context: context,
-                        startText: announcementController.location,
-                        apiKey: AnnouncementScreen.kGoogleApiKey,
-                        language: "pt",
-                        hint: "Pesquisar",
-                        components: [Component(Component.country, "br")]);
+        return Column(
+          children: [
+            const HorizontalIconTextWithArrow(
+                'Localização', Icons.my_location, MainAxisAlignment.center),
+            FlatButton(
+                onPressed: () async {
+                  final Prediction p = await PlacesAutocomplete.show(
+                      context: context,
+                      startText: announcementController.location,
+                      apiKey: AnnouncementScreen.kGoogleApiKey,
+                      language: "pt",
+                      hint: "Pesquisar",
+                      types: ['(cities)'],
+                      components: [Component(Component.country, "br")]);
 
-                    if (p != null) {
-                      setState(() {
-                        announcementController.location = p.description;
-                      });
-                    }
-                  },
-                  child: Row(
+                  if (p != null) {
+                    setState(() {
+                      announcementController.location = p.description;
+                    });
+                  }
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                          announcementController.location.isEmpty
+                              ? 'Clique para selecionar a localização de busca'
+                              : announcementController.location,
+                          style: const TextStyle(
+                              fontSize: 14.0, color: Colors.grey),
+                        ),
+                      ),
+                    ),
+                    if (announcementController.location.isEmpty)
+                      Container()
+                    else
+                      IconButton(
+                        icon: const Icon(Icons.location_off),
+                        onPressed: () {
+                          announcementController.location = '';
+                        },
+                      )
+                  ],
+                )),
+            const HorizontalIconTextWithArrow('Filtrar por Categoria',
+                Icons.category, MainAxisAlignment.start),
+            SizedBox(
+              height: 80.0,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: const [CategoryList()],
+              ),
+            ),
+            const HorizontalIconTextWithArrow(
+                'Anúncios', Icons.storefront, MainAxisAlignment.start),
+            const SizedBox(
+              height: 8.0,
+            ),
+            Consumer<AnnouncementController>(
+              builder: (_, announcementManager, __) {
+                final filteredAnnoucements =
+                    announcementManager.filteredAnnouncements;
+                if (announcementManager.filteredAnnouncements.isEmpty) {
+                  return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        announcementController.location.isEmpty
-                            ? 'Clique para selecionar a localização de busca'
-                            : announcementController.location,
-                        style:
-                            const TextStyle(fontSize: 14.0, color: Colors.grey),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 24.0),
+                        child: SvgPicture.asset(
+                          'assets/images/announcement_screen/announcement_not_found.svg',
+                          width: MediaQuery.of(context).size.width * 0.3,
+                          height: MediaQuery.of(context).size.height * 0.3,
+                        ),
                       ),
-                      if (announcementController.location.isEmpty)
-                        Container()
-                      else
-                        IconButton(
-                          icon: const Icon(Icons.cancel),
-                          onPressed: () {
-                            announcementController.location = '';
-                          },
-                        )
+                      const Padding(
+                        padding: EdgeInsets.only(top: 24.0),
+                        child: Text(
+                          'Nenhum anúncio foi encontrado :(',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w400,
+                              color: AppColor.primaryColor,
+                              fontSize: 18.0),
+                        ),
+                      ),
                     ],
-                  )),
-              const HorizontalIconTextWithArrow('Filtrar por Categoria',
-                  Icons.category, MainAxisAlignment.start),
-              SizedBox(
-                height: 80.0,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: const [CategoryList()],
-                ),
-              ),
-              const HorizontalIconTextWithArrow(
-                  'Anúncios', Icons.storefront, MainAxisAlignment.start),
-              const SizedBox(
-                height: 8.0,
-              ),
-              Consumer<AnnouncementController>(
-                builder: (_, announcementManager, __) {
-                  final filteredAnnoucements =
-                      announcementManager.filteredAnnouncements;
-                  if (announcementManager.filteredAnnouncements.isEmpty) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 24.0),
-                          child: SvgPicture.asset(
-                            'assets/images/announcement_screen/announcement_not_found.svg',
-                            width: MediaQuery.of(context).size.width * 0.3,
-                            height: MediaQuery.of(context).size.height * 0.3,
-                          ),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(top: 24.0),
-                          child: Text(
-                            'Nenhum Anúncio foi encontrado :(',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                color: AppColor.primaryColor,
-                                fontSize: 18.0),
-                          ),
-                        ),
-                      ],
-                    );
-                  }
-                  return Expanded(
+                  );
+                }
+                return Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      await announcementController.loadAllAnnouncements();
+                      await userController.loadAllUsers();
+                    },
                     child: ListView.builder(
-                      //shrinkWrap: true,
-                      //physics: const NeverScrollableScrollPhysics(),
                       padding: const EdgeInsets.all(4),
                       itemCount: filteredAnnoucements.length,
                       itemBuilder: (_, index) {
@@ -187,14 +193,14 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                             filteredAnnoucements[index]);
                       },
                     ),
-                  );
-                },
-              ),
-              const SizedBox(
-                height: 40.0,
-              ),
-            ],
-          ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(
+              height: 40.0,
+            ),
+          ],
         );
       }),
     );

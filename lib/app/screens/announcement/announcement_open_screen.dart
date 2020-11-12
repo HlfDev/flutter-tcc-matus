@@ -1,35 +1,70 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_pro/carousel_pro.dart';
+
+import 'package:floating_action_bubble/floating_action_bubble.dart';
+
 import 'package:flutter/material.dart';
 import 'package:matus_app/app/controllers/announcement_controller.dart';
+import 'package:matus_app/app/helpers/datetime_converter.dart';
 import 'package:matus_app/app/models/announcement.dart';
 import 'package:matus_app/app/controllers/user_controller.dart';
 import 'package:matus_app/app/models/user.dart';
 import 'package:matus_app/app/screens/messages/chat_screen.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
+import 'package:matus_app/app/utils/custom_admob.dart';
 
 import 'package:provider/provider.dart';
 
-class AnnouncementOpenScreen extends StatelessWidget {
+class AnnouncementOpenScreen extends StatefulWidget {
   const AnnouncementOpenScreen(this.announcement);
 
   final Announcement announcement;
+
+  @override
+  _AnnouncementOpenScreenState createState() => _AnnouncementOpenScreenState();
+}
+
+class _AnnouncementOpenScreenState extends State<AnnouncementOpenScreen>
+    with SingleTickerProviderStateMixin {
+  CustomAdMob myCustomAdMob = CustomAdMob();
+  Animation<double> _animation;
+  AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    showBannerAd();
+  }
+
+  void showBannerAd() {
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 260),
+      vsync: this,
+    );
+
+    final curvedAnimation =
+        CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
+    _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
+    myCustomAdMob.interstitial()
+      ..load()
+      ..show();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<UserController>(builder: (_, userController, __) {
       return Scaffold(
         floatingActionButton: userController.isLoggedIn == true
-            ? userController.user.id != announcement.user
+            ? userController.user.id != widget.announcement.user
                 ? FloatingActionButton(
                     onPressed: () {
                       final User userReceptor = context
                           .read<UserController>()
-                          .findUserById(announcement.user);
+                          .findUserById(widget.announcement.user);
                       final User userSender =
                           context.read<UserController>().user;
 
-                      if (userSender.id == announcement.id) {
+                      if (userSender.id == widget.announcement.id) {
                       } else {
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => ChatScreen(
@@ -39,45 +74,83 @@ class AnnouncementOpenScreen extends StatelessWidget {
                     },
                     child: const Icon(Icons.chat),
                   )
-                : FloatingActionButton(
-                    onPressed: () {
-                      context
-                          .read<AnnouncementController>()
-                          .delete(announcement);
-                      Navigator.of(context).pop();
-                    },
-                    child: const Icon(Icons.delete),
+                : FloatingActionBubble(
+                    // Menu items
+                    items: <Bubble>[
+                      // Floating action menu item
+                      Bubble(
+                        title: "Desativar anúncio",
+                        iconColor: Colors.white,
+                        bubbleColor: AppColor.primaryColor,
+                        icon: Icons.delete,
+                        titleStyle:
+                            const TextStyle(fontSize: 16, color: Colors.white),
+                        onPress: () {
+                          context
+                              .read<AnnouncementController>()
+                              .delete(widget.announcement);
+                          Navigator.of(context).pop();
+                          _animationController.reverse();
+                        },
+                      ),
+                      // Floating action menu item
+                      Bubble(
+                        title: "Editar anúncio",
+                        iconColor: Colors.white,
+                        bubbleColor: AppColor.primaryColor,
+                        icon: Icons.edit,
+                        titleStyle:
+                            const TextStyle(fontSize: 16, color: Colors.white),
+                        onPress: () {
+                          Navigator.of(context).pushReplacementNamed(
+                              '/announcement_edit',
+                              arguments: widget.announcement);
+                          _animationController.reverse();
+                        },
+                      ),
+                      //Floating action menu item
+                    ],
+
+                    // animation controller
+                    animation: _animation,
+
+                    // On pressed change animation state
+                    onPress: () => _animationController.isCompleted
+                        ? _animationController.reverse()
+                        : _animationController.forward(),
+
+                    // Floating Action button Icon color
+                    iconColor: Colors.white,
+
+                    // Flaoting Action button Icon
+                    iconData: Icons.add,
+                    backGroundColor: AppColor.primaryColor,
                   )
             : Container(),
         appBar: AppBar(
-          title: Text(announcement.title),
+          title: Text(widget.announcement.title),
           centerTitle: true,
           actions: <Widget>[
             Consumer<UserController>(
               builder: (_, userController, __) {
                 if (userController.isLoggedIn == true) {
-                  if (announcement.user == userController.user.id) {
-                    return IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () {
-                        Navigator.of(context).pushReplacementNamed(
-                            '/announcement_edit',
-                            arguments: announcement);
-                      },
-                    );
+                  if (widget.announcement.user == userController.user.id) {
+                    return Container();
                   } else if (userController.user.savedAnnouncements
-                      .contains(announcement.id)) {
+                      .contains(widget.announcement.id)) {
                     return IconButton(
                       icon: const Icon(Icons.favorite),
                       onPressed: () {
-                        userController.removeSavedAnnouncement(announcement.id);
+                        userController
+                            .removeSavedAnnouncement(widget.announcement.id);
                       },
                     );
                   } else {
                     return IconButton(
                       icon: const Icon(Icons.favorite_border),
                       onPressed: () {
-                        userController.addSavedAnnouncement(announcement.id);
+                        userController
+                            .addSavedAnnouncement(widget.announcement.id);
                       },
                     );
                   }
@@ -94,7 +167,7 @@ class AnnouncementOpenScreen extends StatelessWidget {
             AspectRatio(
               aspectRatio: 1.5,
               child: Carousel(
-                images: announcement.photos.map((url) {
+                images: widget.announcement.photos.map((url) {
                   return CachedNetworkImage(
                     imageUrl: url,
                     progressIndicatorBuilder:
@@ -118,7 +191,7 @@ class AnnouncementOpenScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    'R\$ ${announcement.price}',
+                    'R\$ ${widget.announcement.price}',
                     style: const TextStyle(
                       fontSize: 32.0,
                       fontWeight: FontWeight.bold,
@@ -128,15 +201,15 @@ class AnnouncementOpenScreen extends StatelessWidget {
                     height: 8.0,
                   ),
                   Text(
-                    announcement.title,
+                    widget.announcement.title,
                     style: const TextStyle(fontSize: 18),
                   ),
                   const SizedBox(
                     height: 8.0,
                   ),
-                  const Text(
-                    'Anúnciado em 03/03/20 as 22:00',
-                    style: TextStyle(
+                  Text(
+                    'Anúnciado em ${convertStamp(widget.announcement.announcementDate)}',
+                    style: const TextStyle(
                       color: Colors.grey,
                     ),
                   ),
@@ -155,7 +228,7 @@ class AnnouncementOpenScreen extends StatelessWidget {
                     height: 8.0,
                   ),
                   Text(
-                    announcement.description,
+                    widget.announcement.description,
                     style: const TextStyle(fontSize: 16),
                   ),
                   const Divider(
@@ -173,14 +246,14 @@ class AnnouncementOpenScreen extends StatelessWidget {
                     height: 8.0,
                   ),
                   Text(
-                    'Categoria: ${announcement.category}',
+                    'Categoria: ${widget.announcement.category}',
                     style: const TextStyle(fontSize: 16),
                   ),
                   const SizedBox(
                     height: 8.0,
                   ),
                   Text(
-                    'Peso: ${announcement.weigth} ${announcement.unity}',
+                    'Peso: ${widget.announcement.weigth} ${widget.announcement.unity}',
                     style: const TextStyle(fontSize: 16),
                   ),
                   const SizedBox(
@@ -201,21 +274,21 @@ class AnnouncementOpenScreen extends StatelessWidget {
                     height: 8.0,
                   ),
                   Text(
-                    'CEP: ${announcement.announcementAddress.cep}',
+                    'CEP: ${widget.announcement.announcementAddress.cep}',
                     style: const TextStyle(fontSize: 16),
                   ),
                   const SizedBox(
                     height: 8.0,
                   ),
                   Text(
-                    'Cidade/Estado: ${announcement.announcementAddress.city} - ${announcement.announcementAddress.state}',
+                    'Cidade/Estado: ${widget.announcement.announcementAddress.city} - ${widget.announcement.announcementAddress.state}',
                     style: const TextStyle(fontSize: 16),
                   ),
                   const SizedBox(
                     height: 8.0,
                   ),
                   Text(
-                    'Bairro: ${announcement.announcementAddress.neighbornhood}',
+                    'Bairro: ${widget.announcement.announcementAddress.neighbornhood}',
                     style: const TextStyle(fontSize: 16),
                   ),
                   const Divider(
@@ -230,12 +303,30 @@ class AnnouncementOpenScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(
-                    height: 8.0,
+                    height: 16.0,
                   ),
-                  Text(
-                    'CEP: ${announcement.announcementAddress.cep}',
-                    style: const TextStyle(fontSize: 16),
-                  ),
+                  Consumer<UserController>(builder: (_, userController, __) {
+                    final User userReceptor = context
+                        .read<UserController>()
+                        .findUserById(widget.announcement.user);
+
+                    return Column(
+                      children: [
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              backgroundImage:
+                                  NetworkImage(userReceptor.photoUrl),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16.0),
+                              child: Text(userReceptor.name),
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+                  }),
                   const SizedBox(
                     height: 8.0,
                   ),

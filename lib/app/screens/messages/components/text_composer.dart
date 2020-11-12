@@ -51,7 +51,9 @@ class _TextComposerState extends State<TextComposer> {
                 });
               },
               onSubmitted: (text) {
-                widget.sendMessage(text: text);
+                if (text.isNotEmpty) {
+                  widget.sendMessage(text: text);
+                }
                 _reset();
               },
             ),

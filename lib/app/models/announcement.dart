@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:matus_app/app/models/announcement_address.dart';
 import 'package:uuid/uuid.dart';
@@ -27,13 +26,13 @@ class Announcement extends ChangeNotifier {
   String id;
   String title;
   String description;
-  List<String> photos;
+  List<String> photos = [];
   String category;
   String price;
   String unity;
   String weigth;
-  Timestamp announcementDate;
-  bool deleted;
+  Timestamp announcementDate = Timestamp.now();
+  bool deleted = false;
   List<dynamic> newPhotos;
   String user;
   AnnouncementAddress announcementAddress;
@@ -52,7 +51,7 @@ class Announcement extends ChangeNotifier {
       this.user,
       this.announcementAddress}) {
     photos = photos ?? [];
-    announcementAddress = AnnouncementAddress();
+    announcementAddress = announcementAddress ?? AnnouncementAddress();
   }
 
   Announcement.fromDocument(DocumentSnapshot document) {
@@ -107,16 +106,16 @@ class Announcement extends ChangeNotifier {
         updateImages.add(url);
       }
 
-      for (final photo in photos) {
-        if (!newPhotos.contains(photo)) {
-          try {
-            final ref = await storage.getReferenceFromUrl(photo);
-            await ref.delete();
-          } catch (e) {
-            debugPrint('Falha ao deletar $photo');
-          }
-        }
-      }
+      // for (final photo in photos) {
+      //   if (!(newPhotos.contains(photo)) && photo.contains('firebase')) {
+      //     try {
+      //       final ref = await storage.getReferenceFromUrl(photo);
+      //       await ref.delete();
+      //     } catch (e) {
+      //       debugPrint('Falha ao deletar $photo');
+      //     }
+      //   }
+      // }
 
       await firestoreRef.update({'photos': updateImages});
 
@@ -139,9 +138,9 @@ class Announcement extends ChangeNotifier {
       price: price,
       unity: unity,
       weigth: weigth,
-      announcementDate: announcementDate,
-      deleted: deleted,
-      user: user,
+      announcementDate: announcementDate ?? Timestamp.now(),
+      deleted: deleted ?? false,
+      user: user ?? _fauth.currentUser.uid,
       announcementAddress: announcementAddress.clone(),
     );
   }

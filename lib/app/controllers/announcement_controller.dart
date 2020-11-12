@@ -34,6 +34,8 @@ class AnnouncementController extends ChangeNotifier {
 
   List<Announcement> get filteredAnnouncements {
     final List<Announcement> filteredAnnouncements = [];
+    final List<Announcement> locationAnnouncements = [];
+    final List<Announcement> categoryAnnouncements = [];
 
     if (search.isEmpty) {
       filteredAnnouncements.addAll(allAnnouncements);
@@ -43,10 +45,20 @@ class AnnouncementController extends ChangeNotifier {
     }
 
     if (category.isNotEmpty) {
-      return filteredAnnouncements
-          .where(
-              (l) => l.category.toLowerCase().contains(category.toLowerCase()))
-          .toList();
+      categoryAnnouncements.addAll(filteredAnnouncements);
+      filteredAnnouncements.clear();
+      filteredAnnouncements.addAll(categoryAnnouncements
+          .where((p) => p.category.toLowerCase() == (category.toLowerCase())));
+      categoryAnnouncements.clear();
+    }
+
+    if (location.isNotEmpty) {
+      locationAnnouncements.addAll(filteredAnnouncements);
+      filteredAnnouncements.clear();
+      filteredAnnouncements.addAll(locationAnnouncements.where((p) =>
+          p.announcementAddress.addressExtend.toLowerCase() ==
+          (location.toLowerCase())));
+      locationAnnouncements.clear();
     }
 
     return filteredAnnouncements;

@@ -1,29 +1,44 @@
 import 'package:brasil_fields/brasil_fields.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:matus_app/app/controllers/user_controller.dart';
 import 'package:matus_app/app/models/announcement.dart';
 import 'package:matus_app/app/controllers/announcement_controller.dart';
+import 'package:matus_app/app/models/announcement_address.dart';
+import 'package:matus_app/app/services/cep_aberto_api.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
 import 'package:provider/provider.dart';
 
 import 'components/images_form.dart';
 
-class AnnouncementEditScreen extends StatelessWidget {
+class AnnouncementEditScreen extends StatefulWidget {
   AnnouncementEditScreen(Announcement a)
       : editing = a != null,
         announcement = a != null ? a.clone() : Announcement();
 
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
   final Announcement announcement;
   final bool editing;
+
+  @override
+  _AnnouncementEditScreenState createState() => _AnnouncementEditScreenState();
+}
+
+class _AnnouncementEditScreenState extends State<AnnouncementEditScreen> {
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  AnnouncementAddress announcementAddress;
+
+  final controllerCep = TextEditingController();
+  final cepAbertoService = CepAbertoService();
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
-      value: announcement,
+      value: widget.announcement,
       child: Scaffold(
           appBar: AppBar(
-            title: Text(editing ? 'Editar Anúncio' : 'Criar Anúncio'),
+            title: Text(widget.editing ? 'Editar Anúncio' : 'Criar Anúncio'),
             centerTitle: true,
           ),
           backgroundColor: Colors.white,
@@ -31,7 +46,7 @@ class AnnouncementEditScreen extends StatelessWidget {
             key: formKey,
             child: ListView(
               children: <Widget>[
-                ImagesForm(announcement),
+                ImagesForm(widget.announcement),
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -39,14 +54,17 @@ class AnnouncementEditScreen extends StatelessWidget {
                     children: <Widget>[
                       TextFormField(
                         keyboardType: TextInputType.text,
-                        initialValue: announcement.title,
+                        initialValue: widget.announcement.title,
                         validator: (name) {
                           if (name.isEmpty) return 'Preencha o titulo';
                           if (name.length < 6) return 'Título muito curto';
                           return null;
                         },
-                        onSaved: (name) => announcement.title = name,
+                        onSaved: (name) => widget.announcement.title = name,
                         cursorColor: AppColor.primaryColor,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(40),
+                        ],
                         maxLength: 40,
                         decoration: const InputDecoration(
                           icon: Icon(Icons.title),
@@ -62,7 +80,7 @@ class AnnouncementEditScreen extends StatelessWidget {
                       ),
                       TextFormField(
                         keyboardType: TextInputType.text,
-                        initialValue: announcement.description,
+                        initialValue: widget.announcement.description,
                         validator: (desc) {
                           if (desc.isEmpty) {
                             return 'Preencha a Descrição';
@@ -70,8 +88,12 @@ class AnnouncementEditScreen extends StatelessWidget {
                           if (desc.length < 10) return 'Descrição muito curta';
                           return null;
                         },
-                        onSaved: (desc) => announcement.description = desc,
+                        onSaved: (desc) =>
+                            widget.announcement.description = desc,
                         cursorColor: AppColor.primaryColor,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(80),
+                        ],
                         maxLength: 80,
                         decoration: const InputDecoration(
                           icon: Icon(Icons.description),
@@ -94,8 +116,8 @@ class AnnouncementEditScreen extends StatelessWidget {
                                 FilteringTextInputFormatter.digitsOnly,
                                 RealInputFormatter(centavos: true),
                               ],
-                              initialValue: announcement.price != null
-                                  ? announcement.price.toString()
+                              initialValue: widget.announcement.price != null
+                                  ? widget.announcement.price.toString()
                                   : '',
                               validator: (price) {
                                 if (price.isEmpty) {
@@ -103,7 +125,8 @@ class AnnouncementEditScreen extends StatelessWidget {
                                 }
                                 return null;
                               },
-                              onSaved: (price) => announcement.price = price,
+                              onSaved: (price) =>
+                                  widget.announcement.price = price,
                               cursorColor: AppColor.primaryColor,
                               decoration: const InputDecoration(
                                 icon: Icon(Icons.monetization_on),
@@ -125,10 +148,11 @@ class AnnouncementEditScreen extends StatelessWidget {
                                 PesoInputFormatter(),
                               ],
                               keyboardType: TextInputType.number,
-                              initialValue: announcement.weigth != null
-                                  ? announcement.weigth.toString()
+                              initialValue: widget.announcement.weigth != null
+                                  ? widget.announcement.weigth.toString()
                                   : '',
-                              onSaved: (weigth) => announcement.weigth = weigth,
+                              onSaved: (weigth) =>
+                                  widget.announcement.weigth = weigth,
                               cursorColor: AppColor.primaryColor,
                               decoration: const InputDecoration(
                                 icon: Icon(Icons.donut_small),
@@ -159,8 +183,8 @@ class AnnouncementEditScreen extends StatelessWidget {
                           ),
                           Expanded(
                             child: DropdownButtonFormField(
-                              hint: Text(
-                                  announcement.unity ?? 'Medida (Opcional)'),
+                              hint: Text(widget.announcement.unity ??
+                                  'Medida (Opcional)'),
                               items: [
                                 'G - Grama',
                                 'KG - Quilograma',
@@ -175,7 +199,7 @@ class AnnouncementEditScreen extends StatelessWidget {
                                 },
                               ).toList(),
                               onChanged: (text) {
-                                announcement.unity = text as String;
+                                widget.announcement.unity = text as String;
                               },
                             ),
                           ),
@@ -196,12 +220,13 @@ class AnnouncementEditScreen extends StatelessWidget {
                           Expanded(
                             child: DropdownButtonFormField(
                               validator: (category) {
-                                if (announcement.category == null) {
+                                if (widget.announcement.category == null) {
                                   return 'Selecione a Categoria';
                                 }
                                 return null;
                               },
-                              hint: Text(announcement.category ?? 'Categoria'),
+                              hint: Text(
+                                  widget.announcement.category ?? 'Categoria'),
                               items: [
                                 'Papel',
                                 'Plástico',
@@ -220,7 +245,7 @@ class AnnouncementEditScreen extends StatelessWidget {
                                 },
                               ).toList(),
                               onChanged: (text) {
-                                announcement.category = text as String;
+                                widget.announcement.category = text as String;
                               },
                             ),
                           ),
@@ -229,41 +254,112 @@ class AnnouncementEditScreen extends StatelessWidget {
                       const SizedBox(
                         height: 16.0,
                       ),
-                      TextFormField(
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          CepInputFormatter(),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                CepInputFormatter(),
+                              ],
+                              initialValue:
+                                  widget.announcement.announcementAddress.cep ??
+                                      '',
+                              validator: (cep) {
+                                if (cep.isEmpty) return 'Preencha o CEP';
+                                if (cep.length != 10) return 'CEP invalido';
+                                if (widget.announcement.announcementAddress
+                                        .city ==
+                                    null) {
+                                  return 'CEP invalido';
+                                }
+                                return null;
+                              },
+                              // ignore: void_checks
+                              onChanged: (cep) {
+                                if (cep.length == 10) {
+                                  return widget.announcement.announcementAddress
+                                      .cep = cep;
+                                }
+                              },
+                              onSaved: (cep) => widget
+                                  .announcement.announcementAddress.cep = cep,
+                              cursorColor: AppColor.primaryColor,
+                              decoration: const InputDecoration(
+                                icon: Icon(Icons.location_history),
+                                labelText: 'CEP',
+                                helperText:
+                                    'Clique na Lupa para Buscar o CEP digitado',
+                                labelStyle: TextStyle(
+                                  color: AppColor.primaryColor,
+                                ),
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide:
+                                      BorderSide(color: AppColor.primaryColor),
+                                ),
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.search),
+                            onPressed: () async {
+                              if (widget.announcement.announcementAddress.cep
+                                  .isNotEmpty) {
+                                final cepAbertoAddress = await cepAbertoService
+                                    .getAddressFromCep(widget
+                                        .announcement.announcementAddress.cep);
+
+                                if (cepAbertoAddress != null) {
+                                  announcementAddress = AnnouncementAddress(
+                                    cep: cepAbertoAddress.cep,
+                                    state: cepAbertoAddress.estado.sigla,
+                                    city: cepAbertoAddress.cidade.nome,
+                                    neighbornhood: cepAbertoAddress.bairro,
+                                  );
+
+                                  setState(() {
+                                    widget.announcement.announcementAddress
+                                        .state = announcementAddress.state;
+                                    widget.announcement.announcementAddress
+                                        .city = announcementAddress.city;
+                                    widget.announcement.announcementAddress
+                                            .neighbornhood =
+                                        announcementAddress.neighbornhood;
+                                  });
+                                }
+                              }
+                            },
+                          )
                         ],
-                        initialValue: announcement.announcementAddress.cep,
-                        validator: (cep) {
-                          if (cep.isEmpty) return 'Preencha o CEP';
-                          if (cep.length != 10) return 'CEP invalido';
-                          if (announcement.announcementAddress.city != null) {
-                            return 'CEP invalido';
-                          }
-                          return null;
-                        },
-                        onFieldSubmitted: (cep) async {},
-                        onSaved: (cep) =>
-                            announcement.announcementAddress.cep = cep,
-                        cursorColor: AppColor.primaryColor,
-                        decoration: const InputDecoration(
-                          icon: Icon(Icons.location_history),
-                          labelText: 'CEP',
-                          labelStyle: TextStyle(
-                            color: AppColor.primaryColor,
-                          ),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(color: AppColor.primaryColor),
-                          ),
-                        ),
                       ),
+                      const SizedBox(
+                        height: 8.0,
+                      ),
+                      if (widget.announcement.announcementAddress.city != null)
+                        Padding(
+                          padding:
+                              const EdgeInsets.only(left: 30.0, right: 30.0),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: Card(
+                                color: AppColor.secondaryColor,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    '${widget.announcement.announcementAddress.neighbornhood}, ${widget.announcement.announcementAddress.city} - ${widget.announcement.announcementAddress.state}',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                )),
+                          ),
+                        )
+                      else
+                        Container(),
                       const SizedBox(
                         height: 16.0,
                       ),
-                      Consumer<Announcement>(builder: (_, announcement, __) {
+                      Consumer2<Announcement, UserController>(
+                          builder: (_, announcement, userController, __) {
                         return SizedBox(
                           height: 44,
                           child: RaisedButton(
@@ -271,7 +367,17 @@ class AnnouncementEditScreen extends StatelessWidget {
                                 ? () async {
                                     if (formKey.currentState.validate()) {
                                       formKey.currentState.save();
+
+                                      widget.announcement.announcementAddress
+                                              .addressExtend =
+                                          '${announcement.announcementAddress.neighbornhood}, ${announcement.announcementAddress.city} - ${announcement.announcementAddress.state}, Brasil';
+
                                       await announcement.saveData();
+
+                                      widget.announcement.user =
+                                          userController.user.id;
+                                      widget.announcement.announcementDate =
+                                          Timestamp.now();
 
                                       context
                                           .read<AnnouncementController>()
@@ -290,7 +396,9 @@ class AnnouncementEditScreen extends StatelessWidget {
                                         AlwaysStoppedAnimation(Colors.white),
                                   )
                                 : Text(
-                                    editing ? 'Salvar Alterações' : 'Anúnciar',
+                                    widget.editing
+                                        ? 'Salvar Alterações'
+                                        : 'Anúnciar',
                                     style: const TextStyle(fontSize: 18.0),
                                   ),
                           ),

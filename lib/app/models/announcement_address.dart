@@ -3,13 +3,15 @@ class AnnouncementAddress {
   String state;
   String city;
   String neighbornhood;
+  String addressExtend;
 
-  // Contrutor com atributos opcionais
+  // Construtor com atributos opcionais
   AnnouncementAddress({
     this.cep,
     this.state,
     this.city,
     this.neighbornhood,
+    this.addressExtend,
   });
 
   // Transforma um Map em Object
@@ -18,6 +20,7 @@ class AnnouncementAddress {
     state = map['state'] as String;
     city = map['city'] as String;
     neighbornhood = map['neighbornhood'] as String;
+    addressExtend = map['addressExtend'] as String;
   }
 
   // Transforma o Object em um Map
@@ -27,6 +30,7 @@ class AnnouncementAddress {
       'state': state,
       'city': city,
       'neighbornhood': neighbornhood,
+      'addressExtend': addressExtend,
     };
   }
 
@@ -37,6 +41,7 @@ class AnnouncementAddress {
       state: state,
       city: city,
       neighbornhood: neighbornhood,
+      addressExtend: addressExtend,
     );
   }
 }

@@ -14,25 +14,27 @@ class MyAnnouncementsTab extends StatelessWidget {
         final myAnnouncements = announcementController
             .findAnnouncementsCurrentUser(userController.user.id);
         if (myAnnouncements.isEmpty) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: SvgPicture.asset(
-                  'assets/images/announcement_screen/announcement_not_found.svg',
-                  width: 400.0,
-                  height: 400.0,
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset(
+                  'assets/images/profile_screen/announcement_not_found.svg',
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  height: MediaQuery.of(context).size.height * 0.3,
                 ),
-              ),
-              const Text(
-                'Nenhum Anúncio foi encontrado :(',
-                style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                    color: AppColor.primaryColor,
-                    fontSize: 18.0),
-              ),
-            ],
+                const Padding(
+                  padding: EdgeInsets.only(top: 24.0),
+                  child: Text(
+                    'Você não possui anúncios',
+                    style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        color: AppColor.primaryColor,
+                        fontSize: 18.0),
+                  ),
+                ),
+              ],
+            ),
           );
         } else {
           return ListView.builder(

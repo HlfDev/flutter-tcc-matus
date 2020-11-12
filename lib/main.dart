@@ -1,3 +1,4 @@
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:matus_app/app/controllers/user_controller.dart';
@@ -10,6 +11,8 @@ import 'app/controllers/announcement_controller.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  FirebaseAdMob.instance
+      .initialize(appId: 'ca-app-pub-6067918771202149~3150447374');
   runApp(MyApp());
 }
 
