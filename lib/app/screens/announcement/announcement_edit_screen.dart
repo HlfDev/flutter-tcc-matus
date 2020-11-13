@@ -8,6 +8,7 @@ import 'package:matus_app/app/controllers/announcement_controller.dart';
 import 'package:matus_app/app/models/announcement_address.dart';
 import 'package:matus_app/app/services/cep_aberto_api.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
+import 'package:matus_app/app/utils/custom_admob.dart';
 import 'package:provider/provider.dart';
 
 import 'components/images_form.dart';
@@ -24,13 +25,39 @@ class AnnouncementEditScreen extends StatefulWidget {
   _AnnouncementEditScreenState createState() => _AnnouncementEditScreenState();
 }
 
-class _AnnouncementEditScreenState extends State<AnnouncementEditScreen> {
+class _AnnouncementEditScreenState extends State<AnnouncementEditScreen>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   AnnouncementAddress announcementAddress;
 
   final controllerCep = TextEditingController();
   final cepAbertoService = CepAbertoService();
+
+  CustomAdMob myCustomAdMob = CustomAdMob();
+  // ignore: unused_field
+  Animation<double> _animation;
+  AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    showBannerAd();
+  }
+
+  void showBannerAd() {
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 260),
+      vsync: this,
+    );
+
+    final curvedAnimation =
+        CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
+    _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
+    myCustomAdMob.interstitial()
+      ..load()
+      ..show();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -370,7 +397,7 @@ class _AnnouncementEditScreenState extends State<AnnouncementEditScreen> {
 
                                       widget.announcement.announcementAddress
                                               .addressExtend =
-                                          '${announcement.announcementAddress.neighbornhood}, ${announcement.announcementAddress.city} - ${announcement.announcementAddress.state}, Brasil';
+                                          '${announcement.announcementAddress.city}, ${announcement.announcementAddress.state}, Brasil';
 
                                       await announcement.saveData();
 
@@ -398,7 +425,7 @@ class _AnnouncementEditScreenState extends State<AnnouncementEditScreen> {
                                 : Text(
                                     widget.editing
                                         ? 'Salvar Alterações'
-                                        : 'Anúnciar',
+                                        : 'Anunciar',
                                     style: const TextStyle(fontSize: 18.0),
                                   ),
                           ),

@@ -56,16 +56,17 @@ class Announcement extends ChangeNotifier {
 
   Announcement.fromDocument(DocumentSnapshot document) {
     id = document.id;
-    title = document['title'] as String;
-    description = document['description'] as String;
-    photos = List<String>.from(document.data()['photos'] as List<dynamic>);
-    category = document['category'] as String;
-    price = document['price'] as String;
-    unity = document['unity'] as String;
-    weigth = document['weigth'] as String;
+    title = document['title'] as String ?? '';
+    description = document['description'] as String ?? '';
+    photos =
+        List<String>.from(document.data()['photos'] as List<dynamic>) ?? [];
+    category = document['category'] as String ?? '';
+    price = document['price'] as String ?? '';
+    unity = document['unity'] as String ?? '';
+    weigth = document['weigth'] as String ?? '';
     announcementDate = document['announcementDate'] as Timestamp;
-    deleted = document['deleted'] as bool;
-    user = document['user'] as String;
+    deleted = document['deleted'] as bool ?? false;
+    user = document['user'] as String ?? '';
     announcementAddress = AnnouncementAddress.fromMap(
         document['announcementAddress'] as Map<String, dynamic>);
   }
@@ -74,15 +75,15 @@ class Announcement extends ChangeNotifier {
     loading = true;
 
     final Map<String, dynamic> data = {
-      'title': title,
-      'description': description,
-      'photos': photos,
-      'category': category,
-      'price': price,
-      'unity': unity,
+      'title': title ?? '',
+      'description': description ?? '',
+      'photos': photos ?? '',
+      'category': category ?? '',
+      'price': price ?? '',
+      'unity': unity ?? '',
       'weigth': weigth,
       'announcementDate': announcementDate ?? Timestamp.now(),
-      'user': _fauth.currentUser.uid,
+      'user': _fauth.currentUser.uid ?? '',
       'deleted': deleted ?? false,
       'announcementAddress': announcementAddress.toMap(),
     };

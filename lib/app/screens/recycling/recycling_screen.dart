@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:matus_app/app/screens/recycling/recycle_open_screen.dart';
 
 class RecyclingPage extends StatefulWidget {
   @override
@@ -14,48 +15,53 @@ class _RecyclingPageState extends State<RecyclingPage> {
           title: const Text('Dicas de Reciclagem'),
           centerTitle: true,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Center(
-            child: Column(
-              children: [
-                SvgPicture.asset(
-                  'assets/images/recycling_screen/recycling_image.svg',
-                  width: MediaQuery.of(context).size.width * 0.25,
-                  height: MediaQuery.of(context).size.height * 0.25,
-                ),
-                const SizedBox(height: 20.0),
-                const IconButtonRecycle(
-                  image1:
-                      'assets/images/announcement_screen/category_paper.svg',
-                  text1: 'Papel',
-                  image2:
-                      'assets/images/announcement_screen/category_plastic.svg',
-                  text2: 'Plástico',
-                  image3:
-                      'assets/images/announcement_screen/category_glass.svg',
-                  text3: 'Vidro',
-                ),
-                const IconButtonRecycle(
-                  image1:
-                      'assets/images/announcement_screen/category_metal.svg',
-                  text1: 'Metal',
-                  image2: 'assets/images/announcement_screen/category_wood.svg',
-                  text2: 'Madeira',
-                  image3:
-                      'assets/images/announcement_screen/category_battery.svg',
-                  text3: 'Bateria',
-                ),
-                const IconButtonRecycle(
-                  image1:
-                      'assets/images/announcement_screen/category_components.svg',
-                  text1: 'Peças',
-                  image2: 'assets/images/announcement_screen/category_oil.svg',
-                  text2: 'Óleo',
-                  image3: '',
-                  text3: '',
-                ),
-              ],
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Center(
+              child: Column(
+                children: [
+                  SvgPicture.asset(
+                    'assets/images/recycling_screen/recycling_image.svg',
+                    width: MediaQuery.of(context).size.width * 0.25,
+                    height: MediaQuery.of(context).size.height * 0.25,
+                  ),
+                  const SizedBox(height: 20.0),
+                  const IconButtonRecycle(
+                    image1:
+                        'assets/images/announcement_screen/category_paper.svg',
+                    text1: 'Papel',
+                    image2:
+                        'assets/images/announcement_screen/category_plastic.svg',
+                    text2: 'Plástico',
+                    image3:
+                        'assets/images/announcement_screen/category_glass.svg',
+                    text3: 'Vidro',
+                  ),
+                  const IconButtonRecycle(
+                    image1:
+                        'assets/images/announcement_screen/category_metal.svg',
+                    text1: 'Metal',
+                    image2:
+                        'assets/images/announcement_screen/category_wood.svg',
+                    text2: 'Madeira',
+                    image3:
+                        'assets/images/announcement_screen/category_battery.svg',
+                    text3: 'Bateria',
+                  ),
+                  const IconButtonRecycle(
+                    image1:
+                        'assets/images/announcement_screen/category_components.svg',
+                    text1: 'Peças',
+                    image2:
+                        'assets/images/announcement_screen/category_oil.svg',
+                    text2: 'Óleo',
+                    image3: '',
+                    text3: '',
+                  ),
+                  const SizedBox(height: 100.0),
+                ],
+              ),
             ),
           ),
         ));
@@ -121,7 +127,13 @@ class IconButtonRecycleItem extends StatelessWidget {
                 height: 150.0,
               ),
               iconSize: 60,
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          RecyclingPageOpen(text: text, image: image)),
+                );
+              },
             ),
           Text(text)
         ],

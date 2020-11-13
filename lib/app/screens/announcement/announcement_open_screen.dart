@@ -11,7 +11,6 @@ import 'package:matus_app/app/controllers/user_controller.dart';
 import 'package:matus_app/app/models/user.dart';
 import 'package:matus_app/app/screens/messages/chat_screen.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
-import 'package:matus_app/app/utils/custom_admob.dart';
 
 import 'package:provider/provider.dart';
 
@@ -26,28 +25,23 @@ class AnnouncementOpenScreen extends StatefulWidget {
 
 class _AnnouncementOpenScreenState extends State<AnnouncementOpenScreen>
     with SingleTickerProviderStateMixin {
-  CustomAdMob myCustomAdMob = CustomAdMob();
   Animation<double> _animation;
   AnimationController _animationController;
 
   @override
   void initState() {
     super.initState();
-    showBannerAd();
-  }
 
-  void showBannerAd() {
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 260),
       vsync: this,
+      duration: const Duration(milliseconds: 260),
     );
 
     final curvedAnimation =
         CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
-    myCustomAdMob.interstitial()
-      ..load()
-      ..show();
+
+    super.initState();
   }
 
   @override
@@ -110,9 +104,8 @@ class _AnnouncementOpenScreenState extends State<AnnouncementOpenScreen>
                       ),
                       //Floating action menu item
                     ],
-
-                    // animation controller
                     animation: _animation,
+                    // animation controller
 
                     // On pressed change animation state
                     onPress: () => _animationController.isCompleted
