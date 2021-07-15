@@ -56,16 +56,15 @@ class _AccountSettingsTabState extends State<AccountSettingsTab> {
                     final PickedFile file =
                         await picker.getImage(source: ImageSource.gallery);
                     if (file == null) return;
-                    final StorageUploadTask task = FirebaseStorage.instance
+                    final UploadTask task = FirebaseStorage.instance
                         .ref()
                         .child(
                             'users/${userController.user.id}${DateTime.now().millisecondsSinceEpoch}')
                         .putFile(File(file.path));
 
-                    final StorageTaskSnapshot taskSnapshot =
-                        await task.onComplete;
-                    final String url =
-                        await taskSnapshot.ref.getDownloadURL() as String;
+                    final TaskSnapshot taskSnapshot =
+                        await task.whenComplete(() => null);
+                    final String url = await taskSnapshot.ref.getDownloadURL();
 
                     if (url != null) {
                       final result = await db

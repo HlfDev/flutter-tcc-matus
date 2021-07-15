@@ -8,7 +8,6 @@ import 'package:matus_app/app/controllers/user_controller.dart';
 import 'package:matus_app/app/screens/announcement/components/announcement_category_list.dart';
 import 'package:matus_app/app/screens/announcement/components/announcement_list_tile.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
-import 'package:matus_app/app/utils/custom_admob.dart';
 import 'package:matus_app/app/widgets/icons.dart';
 
 import 'package:provider/provider.dart';
@@ -23,12 +22,9 @@ class AnnouncementScreen extends StatefulWidget {
 }
 
 class _AnnouncementScreenState extends State<AnnouncementScreen> {
-  CustomAdMob myCustomAdMob = CustomAdMob();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         centerTitle: true,
         title: Consumer<AnnouncementController>(

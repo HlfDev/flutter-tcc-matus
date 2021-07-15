@@ -39,7 +39,7 @@ class User {
     photoUrl = document.get('photoUrl') as String;
     loginType = document.get('loginType') as String;
     accountDate = document['accountDate'] as Timestamp;
-    savedAnnouncements = List<String>.from(
-        document.data()['savedAnnouncements'] as List<dynamic> ?? []);
+    savedAnnouncements =
+        List<String>.from(document['savedAnnouncements'] as List<dynamic>);
   }
 }

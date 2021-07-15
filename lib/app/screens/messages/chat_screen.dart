@@ -36,7 +36,7 @@ class _ChatScreenState extends State<ChatScreen> {
     };
 
     if (imgFile != null) {
-      final StorageUploadTask task = FirebaseStorage.instance
+      final UploadTask task = FirebaseStorage.instance
           .ref()
           .child(widget.userSender.id +
               DateTime.now().millisecondsSinceEpoch.toString())
@@ -46,8 +46,8 @@ class _ChatScreenState extends State<ChatScreen> {
         _isLoading = true;
       });
 
-      final StorageTaskSnapshot taskSnapshot = await task.onComplete;
-      final String url = await taskSnapshot.ref.getDownloadURL() as String;
+      final TaskSnapshot taskSnapshot = await task.whenComplete(() => null);
+      final String url = await taskSnapshot.ref.getDownloadURL();
       data['photoUrl'] = url;
 
       setState(() {

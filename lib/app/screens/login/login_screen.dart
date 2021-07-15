@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:matus_app/app/controllers/user_controller.dart';
 import 'package:matus_app/app/themes/app_colors.dart';
@@ -59,39 +58,39 @@ class LoginScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(16),
                         shrinkWrap: true,
                         children: <Widget>[
-                          GoogleSignInButton(
-                            darkMode: true,
-                            text: 'Continuar com Google',
-                            onPressed: () async {
-                              await userController.signInWithGoogle(
-                                  onFail: (e) {
-                                scaffoldKey.currentState.showSnackBar(SnackBar(
-                                  content: Text('Falha ao entrar: $e'),
-                                  backgroundColor: Colors.red,
-                                ));
-                              }, onSuccess: () {
-                                Navigator.of(context).pop();
-                              });
-                            },
-                          ),
-                          SizedBox(
-                            height: 40.0,
-                            child: FacebookSignInButton(
-                                borderRadius: 5.0,
-                                text: '    Continuar com Facebook',
-                                onPressed: () async {
-                                  await userController.signInWithFacebook(
-                                      onFail: (e) {
-                                    scaffoldKey.currentState
-                                        .showSnackBar(SnackBar(
-                                      content: Text('Falha ao entrar: $e'),
-                                      backgroundColor: Colors.red,
-                                    ));
-                                  }, onSuccess: () {
-                                    Navigator.of(context).pop();
-                                  });
-                                }),
-                          )
+                          // GoogleSignInButton(
+                          //   darkMode: true,
+                          //   text: 'Continuar com Google',
+                          //   onPressed: () async {
+                          //     await userController.signInWithGoogle(
+                          //         onFail: (e) {
+                          //       scaffoldKey.currentState.showSnackBar(SnackBar(
+                          //         content: Text('Falha ao entrar: $e'),
+                          //         backgroundColor: Colors.red,
+                          //       ));
+                          //     }, onSuccess: () {
+                          //       Navigator.of(context).pop();
+                          //     });
+                          //   },
+                          // ),
+                          // SizedBox(
+                          //   height: 40.0,
+                          //   child: FacebookSignInButton(
+                          //       borderRadius: 5.0,
+                          //       text: '    Continuar com Facebook',
+                          //       onPressed: () async {
+                          //         await userController.signInWithFacebook(
+                          //             onFail: (e) {
+                          //           scaffoldKey.currentState
+                          //               .showSnackBar(SnackBar(
+                          //             content: Text('Falha ao entrar: $e'),
+                          //             backgroundColor: Colors.red,
+                          //           ));
+                          //         }, onSuccess: () {
+                          //           Navigator.of(context).pop();
+                          //         });
+                          //       }),
+                          // )
                         ],
                       );
                     },

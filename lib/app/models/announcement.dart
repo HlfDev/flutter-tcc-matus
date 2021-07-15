@@ -13,8 +13,7 @@ class Announcement extends ChangeNotifier {
   final firebase.FirebaseAuth _fauth = firebase.FirebaseAuth.instance;
 
   DocumentReference get firestoreRef => firestore.doc('announcements/$id');
-  StorageReference get storageRef =>
-      storage.ref().child('announcements').child(id);
+  Reference get storageRef => storage.ref().child('announcements').child(id);
 
   bool _loading = false;
   bool get loading => _loading;
@@ -58,8 +57,7 @@ class Announcement extends ChangeNotifier {
     id = document.id;
     title = document['title'] as String ?? '';
     description = document['description'] as String ?? '';
-    photos =
-        List<String>.from(document.data()['photos'] as List<dynamic>) ?? [];
+    photos = List<String>.from(document['photos'] as List<dynamic>) ?? [];
     category = document['category'] as String ?? '';
     price = document['price'] as String ?? '';
     unity = document['unity'] as String ?? '';
@@ -100,10 +98,10 @@ class Announcement extends ChangeNotifier {
       if (photos.contains(newPhoto)) {
         updateImages.add(newPhoto as String);
       } else {
-        final StorageUploadTask task =
-            storageRef.child(Uuid().v1()).putFile(newPhoto as File);
-        final StorageTaskSnapshot snapshot = await task.onComplete;
-        final String url = await snapshot.ref.getDownloadURL() as String;
+        final UploadTask task =
+            storageRef.child(const Uuid().v1()).putFile(newPhoto as File);
+        final TaskSnapshot snapshot = await task.whenComplete(() => null);
+        final String url = await snapshot.ref.getDownloadURL();
         updateImages.add(url);
       }
 

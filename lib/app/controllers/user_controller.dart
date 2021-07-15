@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase;
 import 'package:flutter/material.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:matus_app/app/helpers/firebase.errors.dart';
 import 'package:matus_app/app/models/user.dart';
@@ -125,41 +124,41 @@ class UserController extends ChangeNotifier {
     loading = false;
   }
 
-  Future<void> signInWithFacebook({Function onFail, Function onSuccess}) async {
-    if (_fauth.currentUser != null) return;
-    loadingFace = true;
-    final result = await FacebookLogin().logIn(['email', 'public_profile']);
+//   Future<void> signInWithFacebook({Function onFail, Function onSuccess}) async {
+//     if (_fauth.currentUser != null) return;
+//     loadingFace = true;
+//     final result = await FacebookLogin().logIn(['email', 'public_profile']);
 
-    switch (result.status) {
-      case FacebookLoginStatus.loggedIn:
-        final credential =
-            firebase.FacebookAuthProvider.credential(result.accessToken.token);
+//     switch (result.status) {
+//       case FacebookLoginStatus.loggedIn:
+//         final credential =
+//             firebase.FacebookAuthProvider.credential(result.accessToken.token);
 
-        final authResult = await _fauth.signInWithCredential(credential);
+//         final authResult = await _fauth.signInWithCredential(credential);
 
-        if (authResult.user != null) {
-          final firebaseUser = authResult.user;
+//         if (authResult.user != null) {
+//           final firebaseUser = authResult.user;
 
-          user = User(
-            id: firebaseUser.uid,
-            name: firebaseUser.displayName,
-            photoUrl: firebaseUser.photoURL,
-            loginType: "Facebook",
-            accountDate: Timestamp.now(),
-            savedAnnouncements: [],
-          );
+//           user = User(
+//             id: firebaseUser.uid,
+//             name: firebaseUser.displayName,
+//             photoUrl: firebaseUser.photoURL,
+//             loginType: "Facebook",
+//             accountDate: Timestamp.now(),
+//             savedAnnouncements: [],
+//           );
 
-          await user.saveData();
-          onSuccess();
-        }
-        break;
-      case FacebookLoginStatus.cancelledByUser:
-        break;
-      case FacebookLoginStatus.error:
-        onFail(result.errorMessage);
-        break;
-    }
+//           await user.saveData();
+//           onSuccess();
+//         }
+//         break;
+//       case FacebookLoginStatus.cancelledByUser:
+//         break;
+//       case FacebookLoginStatus.error:
+//         onFail(result.errorMessage);
+//         break;
+//     }
 
-    loadingFace = false;
-  }
+//     loadingFace = false;
+//   }
 }

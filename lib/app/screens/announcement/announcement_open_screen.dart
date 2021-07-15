@@ -1,7 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:carousel_pro/carousel_pro.dart';
-
-import 'package:floating_action_bubble/floating_action_bubble.dart';
+import 'package:carousel_pro_nullsafety/carousel_pro_nullsafety.dart';
 
 import 'package:flutter/material.dart';
 import 'package:matus_app/app/controllers/announcement_controller.dart';
@@ -48,78 +46,78 @@ class _AnnouncementOpenScreenState extends State<AnnouncementOpenScreen>
   Widget build(BuildContext context) {
     return Consumer<UserController>(builder: (_, userController, __) {
       return Scaffold(
-        floatingActionButton: userController.isLoggedIn == true
-            ? userController.user.id != widget.announcement.user
-                ? FloatingActionButton(
-                    onPressed: () {
-                      final User userReceptor = context
-                          .read<UserController>()
-                          .findUserById(widget.announcement.user);
-                      final User userSender =
-                          context.read<UserController>().user;
+        // floatingActionButton: userController.isLoggedIn == true
+        //     ? userController.user.id != widget.announcement.user
+        //         ? FloatingActionButton(
+        //             onPressed: () {
+        //               final User userReceptor = context
+        //                   .read<UserController>()
+        //                   .findUserById(widget.announcement.user);
+        //               final User userSender =
+        //                   context.read<UserController>().user;
 
-                      if (userSender.id == widget.announcement.id) {
-                      } else {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => ChatScreen(
-                                userReceptor: userReceptor,
-                                userSender: userSender)));
-                      }
-                    },
-                    child: const Icon(Icons.chat),
-                  )
-                : FloatingActionBubble(
-                    // Menu items
-                    items: <Bubble>[
-                      // Floating action menu item
-                      Bubble(
-                        title: "Desativar anúncio",
-                        iconColor: Colors.white,
-                        bubbleColor: AppColor.primaryColor,
-                        icon: Icons.delete,
-                        titleStyle:
-                            const TextStyle(fontSize: 16, color: Colors.white),
-                        onPress: () {
-                          context
-                              .read<AnnouncementController>()
-                              .delete(widget.announcement);
-                          Navigator.of(context).pop();
-                          _animationController.reverse();
-                        },
-                      ),
-                      // Floating action menu item
-                      Bubble(
-                        title: "Editar anúncio",
-                        iconColor: Colors.white,
-                        bubbleColor: AppColor.primaryColor,
-                        icon: Icons.edit,
-                        titleStyle:
-                            const TextStyle(fontSize: 16, color: Colors.white),
-                        onPress: () {
-                          Navigator.of(context).pushReplacementNamed(
-                              '/announcement_edit',
-                              arguments: widget.announcement);
-                          _animationController.reverse();
-                        },
-                      ),
-                      //Floating action menu item
-                    ],
-                    animation: _animation,
-                    // animation controller
+        //               if (userSender.id == widget.announcement.id) {
+        //               } else {
+        //                 Navigator.of(context).push(MaterialPageRoute(
+        //                     builder: (context) => ChatScreen(
+        //                         userReceptor: userReceptor,
+        //                         userSender: userSender)));
+        //               }
+        //             },
+        //             child: const Icon(Icons.chat),
+        //           )
+        //         : FloatingActionBubble(
+        //             // Menu items
+        //             items: <Bubble>[
+        //               // Floating action menu item
+        //               Bubble(
+        //                 title: "Desativar anúncio",
+        //                 iconColor: Colors.white,
+        //                 bubbleColor: AppColor.primaryColor,
+        //                 icon: Icons.delete,
+        //                 titleStyle:
+        //                     const TextStyle(fontSize: 16, color: Colors.white),
+        //                 onPress: () {
+        //                   context
+        //                       .read<AnnouncementController>()
+        //                       .delete(widget.announcement);
+        //                   Navigator.of(context).pop();
+        //                   _animationController.reverse();
+        //                 },
+        //               ),
+        //               // Floating action menu item
+        //               Bubble(
+        //                 title: "Editar anúncio",
+        //                 iconColor: Colors.white,
+        //                 bubbleColor: AppColor.primaryColor,
+        //                 icon: Icons.edit,
+        //                 titleStyle:
+        //                     const TextStyle(fontSize: 16, color: Colors.white),
+        //                 onPress: () {
+        //                   Navigator.of(context).pushReplacementNamed(
+        //                       '/announcement_edit',
+        //                       arguments: widget.announcement);
+        //                   _animationController.reverse();
+        //                 },
+        //               ),
+        //               //Floating action menu item
+        //             ],
+        //             animation: _animation,
+        //             // animation controller
 
-                    // On pressed change animation state
-                    onPress: () => _animationController.isCompleted
-                        ? _animationController.reverse()
-                        : _animationController.forward(),
+        //             // On pressed change animation state
+        //             onPress: () => _animationController.isCompleted
+        //                 ? _animationController.reverse()
+        //                 : _animationController.forward(),
 
-                    // Floating Action button Icon color
-                    iconColor: Colors.white,
+        //             // Floating Action button Icon color
+        //             iconColor: Colors.white,
 
-                    // Flaoting Action button Icon
-                    iconData: Icons.add,
-                    backGroundColor: AppColor.primaryColor,
-                  )
-            : Container(),
+        //             // Flaoting Action button Icon
+        //             iconData: Icons.add,
+        //             backGroundColor: AppColor.primaryColor,
+        //           )
+        //     : Container(),
         appBar: AppBar(
           title: Text(widget.announcement.title),
           centerTitle: true,

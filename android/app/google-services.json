@@ -1,42 +1,41 @@
 {
   "project_info": {
-    "project_number": "64987663529",
-    "firebase_url": "https://hlfdev-matus.firebaseio.com",
-    "project_id": "hlfdev-matus",
-    "storage_bucket": "hlfdev-matus.appspot.com"
+    "project_number": "610471475271",
+    "project_id": "flutter-matus",
+    "storage_bucket": "flutter-matus.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:64987663529:android:5c948bb3e4b5a3116dedb8",
+        "mobilesdk_app_id": "1:610471475271:android:ce66d272ec7bec985f5962",
         "android_client_info": {
           "package_name": "hlfdev.flutter.matus_app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "64987663529-c3mme8c9h2edap8qssibavs5vl39tuvd.apps.googleusercontent.com",
+          "client_id": "610471475271-eqtvllbae5nbdtohcjfrevtigp5k0pct.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "hlfdev.flutter.matus_app",
-            "certificate_hash": "085ddd4bff4b85f47b3f86433230352be3d8fd1b"
+            "certificate_hash": "17f49393746ffce5b12d1acfa2476311c37cb85a"
           }
         },
         {
-          "client_id": "64987663529-cj3h96engpo018h9b97emkodfruqhn11.apps.googleusercontent.com",
+          "client_id": "610471475271-dlq6s7hnnft02u9t84o5uff5l6lqf2qf.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyB2XjzfdbHZoHM6uM1Ngo-tq5lzd-T4WnU"
+          "current_key": "AIzaSyAUIvoIEDcGEovSMepCZe2OCDGCokNKbCA"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "64987663529-cj3h96engpo018h9b97emkodfruqhn11.apps.googleusercontent.com",
+              "client_id": "610471475271-dlq6s7hnnft02u9t84o5uff5l6lqf2qf.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
