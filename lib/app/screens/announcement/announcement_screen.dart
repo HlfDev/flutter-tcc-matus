@@ -15,7 +15,7 @@ import 'package:provider/provider.dart';
 import 'components/search_dialog.dart';
 
 class AnnouncementScreen extends StatefulWidget {
-  static const kGoogleApiKey = "AIzaSyCXhsY3r1G0xuj7fhhcZon2i_EU_VDtdXU";
+  static const kGoogleApiKey = "GOOGLE PLACES API";
 
   @override
   _AnnouncementScreenState createState() => _AnnouncementScreenState();
@@ -90,12 +90,13 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
           children: [
             const HorizontalIconTextWithArrow(
                 'Localização', Icons.my_location, MainAxisAlignment.center),
-            FlatButton(
+            TextButton(
                 onPressed: () async {
                   final Prediction p = await PlacesAutocomplete.show(
                       context: context,
                       startText: announcementController.location,
                       apiKey: AnnouncementScreen.kGoogleApiKey,
+                      strictbounds: false,
                       language: "pt",
                       hint: "Pesquisar",
                       types: ['(cities)'],

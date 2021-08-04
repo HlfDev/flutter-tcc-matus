@@ -51,7 +51,7 @@ class _AccountSettingsTabState extends State<AccountSettingsTab> {
                                   NetworkImage(userController.user.photoUrl))))
                 else
                   Container(),
-                FlatButton(
+                ElevatedButton(
                   onPressed: () async {
                     final PickedFile file =
                         await picker.getImage(source: ImageSource.gallery);
@@ -159,8 +159,7 @@ class _AccountSettingsTabState extends State<AccountSettingsTab> {
                   ],
                 ),
                 const SizedBox(height: 24.0),
-                RaisedButton.icon(
-                  color: AppColor.secondaryColor,
+                ElevatedButton.icon(
                   onPressed: () {
                     setState(() {
                       userController.signOut();

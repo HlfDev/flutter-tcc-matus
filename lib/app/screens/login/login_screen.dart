@@ -58,39 +58,27 @@ class LoginScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(16),
                         shrinkWrap: true,
                         children: <Widget>[
-                          // GoogleSignInButton(
-                          //   darkMode: true,
-                          //   text: 'Continuar com Google',
-                          //   onPressed: () async {
-                          //     await userController.signInWithGoogle(
-                          //         onFail: (e) {
-                          //       scaffoldKey.currentState.showSnackBar(SnackBar(
-                          //         content: Text('Falha ao entrar: $e'),
-                          //         backgroundColor: Colors.red,
-                          //       ));
-                          //     }, onSuccess: () {
-                          //       Navigator.of(context).pop();
-                          //     });
-                          //   },
-                          // ),
-                          // SizedBox(
-                          //   height: 40.0,
-                          //   child: FacebookSignInButton(
-                          //       borderRadius: 5.0,
-                          //       text: '    Continuar com Facebook',
-                          //       onPressed: () async {
-                          //         await userController.signInWithFacebook(
-                          //             onFail: (e) {
-                          //           scaffoldKey.currentState
-                          //               .showSnackBar(SnackBar(
-                          //             content: Text('Falha ao entrar: $e'),
-                          //             backgroundColor: Colors.red,
-                          //           ));
-                          //         }, onSuccess: () {
-                          //           Navigator.of(context).pop();
-                          //         });
-                          //       }),
-                          // )
+                          Container(
+                            height: 50,
+                            width: 50,
+                            color: Colors.blue,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                await userController.signInWithGoogle(
+                                    onFail: (e) {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(SnackBar(
+                                    content: Text('Falha ao entrar: $e'),
+                                    backgroundColor: Colors.red,
+                                    duration: const Duration(seconds: 3),
+                                  ));
+                                }, onSuccess: () {
+                                  Navigator.of(context).pop();
+                                });
+                              },
+                              child: Text('Google Login'),
+                            ),
+                          ),
                         ],
                       );
                     },

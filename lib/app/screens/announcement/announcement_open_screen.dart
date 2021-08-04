@@ -21,23 +21,10 @@ class AnnouncementOpenScreen extends StatefulWidget {
   _AnnouncementOpenScreenState createState() => _AnnouncementOpenScreenState();
 }
 
-class _AnnouncementOpenScreenState extends State<AnnouncementOpenScreen>
-    with SingleTickerProviderStateMixin {
-  Animation<double> _animation;
-  AnimationController _animationController;
-
+class _AnnouncementOpenScreenState extends State<AnnouncementOpenScreen> {
   @override
   void initState() {
     super.initState();
-
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 260),
-    );
-
-    final curvedAnimation =
-        CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
-    _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
 
     super.initState();
   }
@@ -46,78 +33,28 @@ class _AnnouncementOpenScreenState extends State<AnnouncementOpenScreen>
   Widget build(BuildContext context) {
     return Consumer<UserController>(builder: (_, userController, __) {
       return Scaffold(
-        // floatingActionButton: userController.isLoggedIn == true
-        //     ? userController.user.id != widget.announcement.user
-        //         ? FloatingActionButton(
-        //             onPressed: () {
-        //               final User userReceptor = context
-        //                   .read<UserController>()
-        //                   .findUserById(widget.announcement.user);
-        //               final User userSender =
-        //                   context.read<UserController>().user;
+        floatingActionButton: userController.isLoggedIn == true
+            ? userController.user.id != widget.announcement.user
+                ? FloatingActionButton(
+                    onPressed: () {
+                      final User userReceptor = context
+                          .read<UserController>()
+                          .findUserById(widget.announcement.user);
+                      final User userSender =
+                          context.read<UserController>().user;
 
-        //               if (userSender.id == widget.announcement.id) {
-        //               } else {
-        //                 Navigator.of(context).push(MaterialPageRoute(
-        //                     builder: (context) => ChatScreen(
-        //                         userReceptor: userReceptor,
-        //                         userSender: userSender)));
-        //               }
-        //             },
-        //             child: const Icon(Icons.chat),
-        //           )
-        //         : FloatingActionBubble(
-        //             // Menu items
-        //             items: <Bubble>[
-        //               // Floating action menu item
-        //               Bubble(
-        //                 title: "Desativar anúncio",
-        //                 iconColor: Colors.white,
-        //                 bubbleColor: AppColor.primaryColor,
-        //                 icon: Icons.delete,
-        //                 titleStyle:
-        //                     const TextStyle(fontSize: 16, color: Colors.white),
-        //                 onPress: () {
-        //                   context
-        //                       .read<AnnouncementController>()
-        //                       .delete(widget.announcement);
-        //                   Navigator.of(context).pop();
-        //                   _animationController.reverse();
-        //                 },
-        //               ),
-        //               // Floating action menu item
-        //               Bubble(
-        //                 title: "Editar anúncio",
-        //                 iconColor: Colors.white,
-        //                 bubbleColor: AppColor.primaryColor,
-        //                 icon: Icons.edit,
-        //                 titleStyle:
-        //                     const TextStyle(fontSize: 16, color: Colors.white),
-        //                 onPress: () {
-        //                   Navigator.of(context).pushReplacementNamed(
-        //                       '/announcement_edit',
-        //                       arguments: widget.announcement);
-        //                   _animationController.reverse();
-        //                 },
-        //               ),
-        //               //Floating action menu item
-        //             ],
-        //             animation: _animation,
-        //             // animation controller
-
-        //             // On pressed change animation state
-        //             onPress: () => _animationController.isCompleted
-        //                 ? _animationController.reverse()
-        //                 : _animationController.forward(),
-
-        //             // Floating Action button Icon color
-        //             iconColor: Colors.white,
-
-        //             // Flaoting Action button Icon
-        //             iconData: Icons.add,
-        //             backGroundColor: AppColor.primaryColor,
-        //           )
-        //     : Container(),
+                      if (userSender.id == widget.announcement.id) {
+                      } else {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => ChatScreen(
+                                userReceptor: userReceptor,
+                                userSender: userSender)));
+                      }
+                    },
+                    child: const Icon(Icons.chat),
+                  )
+                : Container()
+            : Container(),
         appBar: AppBar(
           title: Text(widget.announcement.title),
           centerTitle: true,
@@ -126,7 +63,27 @@ class _AnnouncementOpenScreenState extends State<AnnouncementOpenScreen>
               builder: (_, userController, __) {
                 if (userController.isLoggedIn == true) {
                   if (widget.announcement.user == userController.user.id) {
-                    return Container();
+                    return Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () {
+                            Navigator.of(context).pushReplacementNamed(
+                                '/announcement_edit',
+                                arguments: widget.announcement);
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            context
+                                .read<AnnouncementController>()
+                                .delete(widget.announcement);
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
                   } else if (userController.user.savedAnnouncements
                       .contains(widget.announcement.id)) {
                     return IconButton(

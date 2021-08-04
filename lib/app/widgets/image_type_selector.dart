@@ -22,7 +22,7 @@ class ImageTypeSelector extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            FlatButton(
+            ElevatedButton(
               onPressed: () async {
                 final PickedFile file =
                     await picker.getImage(source: ImageSource.camera);
@@ -39,7 +39,7 @@ class ImageTypeSelector extends StatelessWidget {
                 ],
               ),
             ),
-            FlatButton(
+            ElevatedButton(
               onPressed: () async {
                 final PickedFile file =
                     await picker.getImage(source: ImageSource.gallery);

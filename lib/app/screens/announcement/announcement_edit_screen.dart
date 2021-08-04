@@ -368,7 +368,7 @@ class _AnnouncementEditScreenState extends State<AnnouncementEditScreen>
                           builder: (_, announcement, userController, __) {
                         return SizedBox(
                           height: 44,
-                          child: RaisedButton(
+                          child: ElevatedButton(
                             onPressed: !announcement.loading
                                 ? () async {
                                     if (formKey.currentState.validate()) {
@@ -392,10 +392,6 @@ class _AnnouncementEditScreenState extends State<AnnouncementEditScreen>
                                     }
                                   }
                                 : null,
-                            textColor: Colors.white,
-                            color: Theme.of(context).primaryColor,
-                            disabledColor:
-                                Theme.of(context).primaryColor.withAlpha(100),
                             child: announcement.loading
                                 ? const CircularProgressIndicator(
                                     valueColor:
